@@ -1,0 +1,82 @@
+﻿<Page x:Class="UiDesktopApp1.Views.Pages.SanPham.ThemSanPhamPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:local="clr-namespace:UiDesktopApp1.Views.Pages.SanPham"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ThemSanPhamPage">
+
+    <Border Margin="16" Padding="16" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8">
+        <ScrollViewer Width="450" Margin="0,5,0,5">
+            <StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <!-- Ảnh hiển thị -->
+                    <ui:Image Source="{Binding Image}" 
+                              Width="80" Height="80"
+                              Stretch="UniformToFill"
+                              CornerRadius="8"
+                              BorderBrush="Gray"
+                              BorderThickness="2"
+                              Margin="5">
+                        
+                    </ui:Image>
+
+                    <!-- Nút mở file chọn ảnh -->
+                    <ui:Button Content="Chọn ảnh"
+                               Icon="CameraAdd24"
+                               Appearance="Primary"
+                               Command="{Binding OpenPictureCommand}"
+                               Margin="5"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Mã sản phẩm" FontWeight="SemiBold"/>
+                        <TextBlock Text=" *(Bắt buộc)"
+                                   Foreground="DarkRed"/>
+                    </StackPanel>
+                    <ui:TextBox PlaceholderText="Mã sản phẩm. Ví dụ: 12345"
+                                Margin="0,5,0,0"
+                                Text="{Binding Product.ProductCode, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Tên sản phẩm" FontWeight="SemiBold"/>
+                        <TextBlock Text=" *(Bắt buộc)"
+                                   Foreground="DarkRed"/>
+                    </StackPanel>
+                    <ui:TextBox PlaceholderText="Nhập tên sản phẩm"
+                                Margin="0,5,0,0"
+                                Text="{Binding Product.ProductName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Số lượng bam đầu" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <ui:NumberBox Margin="0,5,0,0"
+                                      Value="{Binding Product.InitialQty, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Giá vốn" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <ui:NumberBox Margin="0,5,0,0"
+                                      Value="{Binding Product.CostPrice, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Giá bán" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <ui:NumberBox Margin="0,5,0,0"
+                                      Value="{Binding Product.SalePrice, Mode=TwoWay}"/>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</Page>
