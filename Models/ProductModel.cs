@@ -28,13 +28,13 @@ namespace UiDesktopApp1.Models
 
         [Range(0, int.MaxValue, ErrorMessage = "Số lượng ban đầu không hợp lệ.")]
         [ObservableProperty]
-        private int initialQty;
+        private int? initialQty;
 
         [Range(typeof(decimal), "0", "79228162514264337593543950335", ErrorMessage = "Giá vốn không hợp lệ.")]
-        public decimal CostPrice { get; set; }
+        public decimal? CostPrice { get; set; }
 
         [Range(typeof(decimal), "0", "79228162514264337593543950335", ErrorMessage = "Giá bán không hợp lệ.")]
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
 
         [ObservableProperty]
         private int? safeQty = 0;
@@ -47,5 +47,7 @@ namespace UiDesktopApp1.Models
 
         [NotMapped]
         public BitmapImage? Image { get; set; }
+
+        public void ValidateAll() => base.ValidateAllProperties();
     }
 }

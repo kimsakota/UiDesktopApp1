@@ -34,6 +34,7 @@ namespace UiDesktopApp1.Views.Pages.SanPham
             DataContext = viewModel;
             _header = header;
         }
+
         public object? GetHeader() => _header;
     }
 }

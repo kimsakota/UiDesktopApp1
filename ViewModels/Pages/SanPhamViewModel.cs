@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using UiDesktopApp1.Models;
+using UiDesktopApp1.ViewModels.Pages.SanPham;
 using Wpf.Ui;
 
 namespace UiDesktopApp1.ViewModels.Pages

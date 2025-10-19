@@ -77,50 +77,50 @@ namespace UiDesktopApp1
                 // —> nếu dùng cách B, nhớ sửa constructor VM sang IDbContextFactory<AppDbContext>
 
                 services.AddSingleton<TaiChinhPage>();
-                services.AddTransient<TaiChinhViewModel>();
+                services.AddScoped<TaiChinhViewModel>();
                 services.AddSingleton<TonKhoPage>();
-                services.AddTransient<TonKhoViewModel>();
+                services.AddScoped<TonKhoViewModel>();
                 services.AddSingleton<Views.Pages.BaoCao.KhachHangPage>();
-                services.AddTransient<ViewModels.Pages.BaoCao.KhachHangViewModel>();
+                services.AddScoped<ViewModels.Pages.BaoCao.KhachHangViewModel>();
                 services.AddSingleton<SanPhamPage>();
                 services.AddTransient<SanPhamViewModel>();
                 services.AddSingleton<NhapKhoPage>();
-                services.AddTransient<NhapKhoViewModel>();
+                services.AddScoped<NhapKhoViewModel>();
                 services.AddSingleton<XuatKhoPage>();
-                services.AddTransient<XuatKhoViewModel>();
+                services.AddScoped<XuatKhoViewModel>();
                 services.AddSingleton<KiemKeKhoPage>();
-                services.AddTransient<KiemKeKhoViewModel>();
+                services.AddScoped<KiemKeKhoViewModel>();
                 services.AddSingleton<ChuyenKhoPage>();
-                services.AddTransient<ChuyenKhoViewModel>();
+                services.AddScoped<ChuyenKhoViewModel>();
                 services.AddSingleton<LichSuPage>();
-                services.AddTransient<LichSuViewModel>();
+                services.AddScoped<LichSuViewModel>();
                 services.AddSingleton<ChiPhiPage>();
-                services.AddTransient<ChiPhiViewModel>();
+                services.AddScoped<ChiPhiViewModel>();
 
                 services.AddSingleton<Views.Pages.LienHe.KhachHangPage>();
-                services.AddTransient<ViewModels.Pages.LienHe.KhachHangViewModel>();
+                services.AddScoped<ViewModels.Pages.LienHe.KhachHangViewModel>();
                 services.AddSingleton<NhaCungCapPage>();
-                services.AddTransient<NhaCungCapViewModel>();
+                services.AddScoped<NhaCungCapViewModel>();
                 services.AddSingleton<NhanVienPage>();
-                services.AddTransient<NhanVienViewModel>();
+                services.AddScoped<NhanVienViewModel>();
 
                 services.AddSingleton<SettingsPage>();
-                services.AddTransient<SettingsViewModel>();
+                services.AddScoped<SettingsViewModel>();
 
                 //Thành phần trong mục sản phẩm
                 services.AddTransient<ThemSanPhamPage>();
-                services.AddTransient<ThemSanPhamViewModel>();
+                services.AddScoped<ThemSanPhamViewModel>();
 
                 // Thêm dòng sau: Đăng ký Header và ViewModel của nó
                 // Dùng AddTransient để mỗi lần gọi sẽ tạo một instance mới, phù hợp cho UserControl
-                services.AddTransient<SanPhamPageHeader>();
-                services.AddTransient<SanPhamPageHeaderViewModel>();
-                services.AddTransient<NhapKhoPageHeader>();
-                services.AddTransient<NhapKhoPageHeaderViewModel>();
+                services.AddSingleton<SanPhamPageHeader>();
+                services.AddScoped<SanPhamPageHeaderViewModel>();
+                services.AddSingleton<NhapKhoPageHeader>();
+                services.AddScoped<NhapKhoPageHeaderViewModel>();
                 
                 
                 services.AddTransient<ThemSanPhamPageHeader>();
-                services.AddTransient<ThemSanPhamPageHeaderViewModel>();
+                services.AddScoped<ThemSanPhamPageHeaderViewModel>();
                
                 //
             }).Build();
