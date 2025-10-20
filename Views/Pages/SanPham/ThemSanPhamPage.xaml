@@ -4,7 +4,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:local="clr-namespace:UiDesktopApp1.Views.Pages.SanPham"
+      xmlns:conv="clr-namespace:UiDesktopApp1.Models"
+      xmlns:beh="clr-namespace:UiDesktopApp1.Behaviors"
+      xmlns:local="clr-namespace:UiDesktopApp1.Views.Pages.SanPham" 
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ThemSanPhamPage">
@@ -40,9 +42,22 @@
                         <TextBlock Text=" *(Bắt buộc)"
                                    Foreground="DarkRed"/>
                     </StackPanel>
-                    <ui:TextBox PlaceholderText="Mã sản phẩm. Ví dụ: 12345"
-                                Margin="0,5,0,0"
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox PlaceholderText="Mã sản phẩm. Ví dụ: 12345"
+                                    Grid.Column="0"
+                                Margin="0,5,5,0"
                                 Text="{Binding Product.ProductCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnExceptions=True, NotifyOnValidationError=True}"/>
+                        <ui:Button Content="Ngẫu nhiên"
+                                   Grid.Column="1"
+                                   Command="{Binding GenerateRandomCodeCommand}"
+                                   Width="Auto" Height="35.62"
+                                   Margin="0,5,0,0"
+                                   Appearance="Primary"/>
+                    </Grid>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
@@ -59,21 +74,24 @@
                         <TextBlock Text="Số lượng ban đầu" FontWeight="SemiBold"/>
                     </StackPanel>
                     <ui:TextBox Margin="0,5,0,0"
-                                      Text="{Binding Product.InitialQty, Mode=TwoWay}"/>
+                                beh:TextBoxBehaviors.SelectAllOnFocus="True"
+                                Text="{Binding Product.InitialQty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Giá vốn" FontWeight="SemiBold"/>
                     </StackPanel>
                     <ui:TextBox Margin="0,5,0,0"
-                                      Text="{Binding Product.CostPrice, Mode=TwoWay, StringFormat={}{0:N2}, UpdateSourceTrigger=PropertyChanged}"/>
+                                beh:TextBoxBehaviors.SelectAllOnFocus="True"
+                                Text="{Binding Product.CostPrice, Mode=TwoWay, Converter={x:Static conv:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Giá bán" FontWeight="SemiBold"/>
                     </StackPanel>
                     <ui:TextBox Margin="0,5,0,0"
-                                      Text="{Binding Product.SalePrice, Mode=TwoWay, StringFormat={}{0:N2}, UpdateSourceTrigger=PropertyChanged}"/>
+                                beh:TextBoxBehaviors.SelectAllOnFocus="True"
+                                Text="{Binding Product.SalePrice, Mode=TwoWay, Converter={x:Static conv:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
 
             </StackPanel>

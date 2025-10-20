@@ -2,11 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using UiDesktopApp1.Models;  
 using Wpf.Ui;
@@ -142,6 +146,12 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
                 return new BitmapImage(new Uri(Path.GetFullPath(path), UriKind.Absolute));
             }
             catch { return null; }
+        }
+
+        [RelayCommand]
+        private void GenerateRandomCode()
+        {
+            Product.ProductCode = $"SP-{DateTime.Now:yyMMddHHmmss}";
         }
     }
 }

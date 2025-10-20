@@ -28,7 +28,7 @@ namespace UiDesktopApp1.Models
 
         [Range(0, int.MaxValue, ErrorMessage = "Số lượng ban đầu không hợp lệ.")]
         [ObservableProperty]
-        private int? initialQty;
+        private int initialQty;
 
         [Range(typeof(decimal), "0", "79228162514264337593543950335", ErrorMessage = "Giá vốn không hợp lệ.")]
         public decimal CostPrice { get; set; }
@@ -44,6 +44,9 @@ namespace UiDesktopApp1.Models
 
         [ObservableProperty]
         private string? description;
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime LastUpdatedAt { get; set; }
 
         [NotMapped]
         public BitmapImage? Image { get; set; }
