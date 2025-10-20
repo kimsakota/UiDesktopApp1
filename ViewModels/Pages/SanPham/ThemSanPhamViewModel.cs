@@ -32,7 +32,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         public ThemSanPhamViewModel(INavigationService nav, AppDbContext db)
         {
             _nav = nav;
-            _db = db;
+            _db = db;  
 
             ResetForm();
         }
