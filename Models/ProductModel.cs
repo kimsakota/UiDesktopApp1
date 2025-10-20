@@ -44,9 +44,7 @@ namespace UiDesktopApp1.Models
 
         [ObservableProperty]
         private string? description;
-
-        public DateTime CreatedAt { get; set; }
-        public DateTime LastUpdatedAt { get; set; }
+        
 
         [NotMapped]
         public BitmapImage? Image { get; set; }

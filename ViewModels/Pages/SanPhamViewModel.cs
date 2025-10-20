@@ -17,7 +17,7 @@ using Wpf.Ui;
 
 namespace UiDesktopApp1.ViewModels.Pages
 {
-    public partial class SanPhamViewModel : ObservableObject 
+    public partial class SanPhamViewModel : ObservableObject
     {
         private readonly INavigationService _navigationService;
         private readonly AppDbContext _db;

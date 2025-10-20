@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using UiDesktopApp1.Models;  
+using UiDesktopApp1.Models;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -33,7 +33,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         {
             _nav = nav;
             _db = db;
-            
+
             ResetForm();
         }
         /*private void LoadDefaultImage()
@@ -117,7 +117,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
                 //System.Windows.MessageBox.Show("Đã lưu sản phẩm thành công!", "KhoPro",
                 //    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
 
-                ResetForm();    
+                ResetForm();
                 //Điều hướng về trang danh sách
                 _nav.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPhamPage));
             }
