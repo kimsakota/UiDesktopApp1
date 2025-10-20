@@ -45,7 +45,7 @@ namespace UiDesktopApp1.ViewModels.Pages
         public async Task LoadAsync()
         {
             Products.Clear();
-
+            SearchText = string.Empty.Trim();
             var items = await _db.Products
                 .AsNoTracking()
                 .OrderBy(p => p.ProductName)

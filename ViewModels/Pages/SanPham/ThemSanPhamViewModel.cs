@@ -51,10 +51,10 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
             {
                 ProductCode = null,
                 ProductName = null,
-                InitialQty = null,
-                SafeQty = null,
-                CostPrice = null,
-                SalePrice = null,
+                InitialQty = 0,
+                SafeQty = 0,
+                CostPrice = 0,
+                SalePrice = 0,
                 ImagePath = "pack://application:,,,/Assets/Images/logo-image.png"
             };
 
@@ -88,8 +88,8 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         {
             Product.ValidateAll();
 
-            System.Diagnostics.Debug.WriteLine(
-            $"Save: Code={Product.ProductCode ?? "<null>"}, Name={Product.ProductName ?? "<null>"}");
+            /*System.Diagnostics.Debug.WriteLine(
+            $"Save: Code={Product.ProductCode ?? "<null>"}, Name={Product.ProductName ?? "<null>"}");*/
 
             if (Product.HasErrors)
             {

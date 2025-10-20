@@ -31,10 +31,10 @@ namespace UiDesktopApp1.Models
         private int? initialQty;
 
         [Range(typeof(decimal), "0", "79228162514264337593543950335", ErrorMessage = "Giá vốn không hợp lệ.")]
-        public decimal? CostPrice { get; set; }
+        public decimal CostPrice { get; set; }
 
         [Range(typeof(decimal), "0", "79228162514264337593543950335", ErrorMessage = "Giá bán không hợp lệ.")]
-        public decimal? SalePrice { get; set; }
+        public decimal SalePrice { get; set; }
 
         [ObservableProperty]
         private int? safeQty = 0;

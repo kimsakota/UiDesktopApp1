@@ -42,7 +42,7 @@
                     <ComboBox Height="32" Width="120"
                           Margin="10,0,0,0"/>
                     <ui:Button Content="Làm mới"
-                               Command="{Binding RefreshCommand}"
+                               Command="{Binding LoadCommand}"
                            Margin="10,0,0,0">
                         <ui:Button.Icon>
                             <ui:SymbolIcon Symbol="ArrowClockwise20"/>
