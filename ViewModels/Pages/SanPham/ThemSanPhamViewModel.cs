@@ -118,7 +118,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
                 //    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
 
                 ResetForm();    
-                // 5) Điều hướng về trang danh sách
+                //Điều hướng về trang danh sách
                 _nav.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPhamPage));
             }
             catch (Exception ex)

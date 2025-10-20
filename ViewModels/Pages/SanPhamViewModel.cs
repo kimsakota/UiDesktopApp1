@@ -36,7 +36,7 @@ namespace UiDesktopApp1.ViewModels.Pages
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
             _db = db ?? throw new ArgumentNullException(nameof(db));
 
-            // 2️⃣ Sau khi có dữ liệu, tạo view & filter
+            // Sau khi có dữ liệu, tạo view & filter
             _productsView = CollectionViewSource.GetDefaultView(Products);
             _productsView.Filter = FilterProducts;
         }
