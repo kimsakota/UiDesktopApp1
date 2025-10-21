@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QuanLyKhoHang.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,19 @@ namespace UiDesktopApp1.Models
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<ProductModel> Products => Set<ProductModel>();
-
+        public DbSet<CategoryModel> Categories => Set<CategoryModel>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ProductModel>()
                 .HasIndex(p => p.ProductCode)
-                .IsUnique(false); // đổi thành true nếu muốn mã là duy nhất
+                .IsUnique(false);
+
+            modelBuilder.Entity<ProductModel>()
+                .HasOne(p => p.Category)
+                .WithMany(p => p.Products)
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull); // Xoá danh mục -> CategoryId của sản phẩm = NULL
 
             base.OnModelCreating(modelBuilder);
         }

@@ -1,12 +1,14 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using QuanLyKhoHang.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace UiDesktopApp1.Models
 {
@@ -16,7 +18,7 @@ namespace UiDesktopApp1.Models
         public int Id { get; set; }
 
         [ObservableProperty]
-        private string? imagePath;
+        private string? imagePath = "pack://application:,,,/Assets/Images/logo-image.png";
 
         [Required(ErrorMessage = "Mã sản phẩm là bắt buộc")]
         [ObservableProperty]
@@ -44,11 +46,17 @@ namespace UiDesktopApp1.Models
 
         [ObservableProperty]
         private string? description;
-        
+
+        [ObservableProperty]
+        private int? categoryId;
+
+        [ForeignKey(nameof(CategoryId))]
+        public CategoryModel? Category { get; set; }
 
         [NotMapped]
         public BitmapImage? Image { get; set; }
 
         public void ValidateAll() => base.ValidateAllProperties();
+
     }
 }

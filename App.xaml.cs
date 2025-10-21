@@ -2,8 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using QuanLyKhoHang.ViewModels.Pages.SanPham;
+using QuanLyKhoHang.Views.Pages.SanPham;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Threading;
 using UiDesktopApp1.Models;
 using UiDesktopApp1.Services;
@@ -27,138 +30,97 @@ using Wpf.Ui.DependencyInjection;
 
 namespace UiDesktopApp1
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App
+    public partial class App : Application
     {
-        // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
-        // https://docs.microsoft.com/dotnet/core/extensions/generic-host
-        // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
-        // https://docs.microsoft.com/dotnet/core/extensions/configuration
-        // https://docs.microsoft.com/dotnet/core/extensions/logging
-        private static readonly IHost _host = Host
-            .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(c => {
-                // Nạp cấu hình & connection string
-                c.SetBasePath(Path.GetDirectoryName(AppContext.BaseDirectory)!);
-                c.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                // c.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true); // nếu cần
-                // c.AddEnvironmentVariables(); // nếu cần
-            })
-            .ConfigureServices((context, services) =>
-            {
-                services.AddNavigationViewPageProvider();
+        private static readonly IHost _host = CreateHostBuilder(Array.Empty<string>()).Build();
 
-                services.AddHostedService<ApplicationHostService>();
+        public static IServiceProvider Services => _host.Services;
 
-                // Theme manipulation
-                services.AddSingleton<IThemeService, ThemeService>();
-
-                // TaskBar manipulation
-                services.AddSingleton<ITaskBarService, TaskBarService>();
-
-                // Service containing navigation, same as INavigationWindow... but without window
-                services.AddSingleton<INavigationService, NavigationService>();
-
-                // Main window with navigation
-                services.AddSingleton<INavigationWindow, MainWindow>();
-                services.AddSingleton<MainWindowViewModel>();
-
-                // EF Core registration
-                // =========================
-                var connStr = context.Configuration.GetConnectionString("DefaultConnection")
-                              ?? "Server=localhost\\SQLEXPRESS;Database=QuanLyKhoHang;Trusted_Connection=True;TrustServerCertificate=True;";
-
-                // CÁCH A (đơn giản): Inject thẳng AppDbContext vào ViewModel
-                services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connStr));
-                // CÁCH B (khuyên dùng Desktop): Factory (nếu ViewModel dùng IDbContextFactory<AppDbContext>)
-                // services.AddDbContextFactory<AppDbContext>(opt => opt.UseSqlServer(connStr));
-                // —> nếu dùng cách B, nhớ sửa constructor VM sang IDbContextFactory<AppDbContext>
-
-                services.AddSingleton<TaiChinhPage>();
-                services.AddScoped<TaiChinhViewModel>();
-                services.AddSingleton<TonKhoPage>();
-                services.AddScoped<TonKhoViewModel>();
-                services.AddSingleton<Views.Pages.BaoCao.KhachHangPage>();
-                services.AddScoped<ViewModels.Pages.BaoCao.KhachHangViewModel>();
-                services.AddSingleton<SanPhamPage>();
-                services.AddTransient<SanPhamViewModel>();
-                services.AddSingleton<NhapKhoPage>();
-                services.AddScoped<NhapKhoViewModel>();
-                services.AddSingleton<XuatKhoPage>();
-                services.AddScoped<XuatKhoViewModel>();
-                services.AddSingleton<KiemKeKhoPage>();
-                services.AddScoped<KiemKeKhoViewModel>();
-                services.AddSingleton<ChuyenKhoPage>();
-                services.AddScoped<ChuyenKhoViewModel>();
-                services.AddSingleton<LichSuPage>();
-                services.AddScoped<LichSuViewModel>();
-                services.AddSingleton<ChiPhiPage>();
-                services.AddScoped<ChiPhiViewModel>();
-
-                services.AddSingleton<Views.Pages.LienHe.KhachHangPage>();
-                services.AddScoped<ViewModels.Pages.LienHe.KhachHangViewModel>();
-                services.AddSingleton<NhaCungCapPage>();
-                services.AddScoped<NhaCungCapViewModel>();
-                services.AddSingleton<NhanVienPage>();
-                services.AddScoped<NhanVienViewModel>();
-
-                services.AddSingleton<SettingsPage>();
-                services.AddScoped<SettingsViewModel>();
-
-                //Thành phần trong mục sản phẩm
-                services.AddTransient<ThemSanPhamPage>();
-                services.AddScoped<ThemSanPhamViewModel>();
-
-                // Thêm dòng sau: Đăng ký Header và ViewModel của nó
-                // Dùng AddTransient để mỗi lần gọi sẽ tạo một instance mới, phù hợp cho UserControl
-                services.AddSingleton<SanPhamPageHeader>();
-                services.AddScoped<SanPhamPageHeaderViewModel>();
-                services.AddSingleton<NhapKhoPageHeader>();
-                services.AddScoped<NhapKhoPageHeaderViewModel>();
-                
-                
-                services.AddTransient<ThemSanPhamPageHeader>();
-                services.AddScoped<ThemSanPhamPageHeaderViewModel>();
-               
-                //
-            }).Build();
-
-        /// <summary>
-        /// Gets services.
-        /// </summary>
-        public static IServiceProvider Services
-        {
-            get { return _host.Services; }
-        }
-
-        /// <summary>
-        /// Occurs when the application is loading.
-        /// </summary>
         private async void OnStartup(object sender, StartupEventArgs e)
         {
             await _host.StartAsync();
-
             ApplicationThemeManager.Apply(ApplicationTheme.Light);
         }
 
-        /// <summary>
-        /// Occurs when the application is closing.
-        /// </summary>
         private async void OnExit(object sender, ExitEventArgs e)
         {
             await _host.StopAsync();
-
             _host.Dispose();
         }
 
-        /// <summary>
-        /// Occurs when an exception is thrown by an application but not handled.
-        /// </summary>
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
+            // Handle unhandled exceptions here if needed
         }
+
+        // 🟡 EF Core CLI sẽ gọi hàm này khi chạy migration
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(c =>
+                {
+                    c.SetBasePath(Path.GetDirectoryName(AppContext.BaseDirectory)!);
+                    c.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                    // c.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true);
+                    // c.AddEnvironmentVariables();
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddNavigationViewPageProvider();
+
+                    services.AddHostedService<ApplicationHostService>();
+
+                    services.AddSingleton<IThemeService, ThemeService>();
+                    services.AddSingleton<ITaskBarService, TaskBarService>();
+                    services.AddSingleton<INavigationService, NavigationService>();
+                    services.AddSingleton<INavigationWindow, MainWindow>();
+                    services.AddSingleton<MainWindowViewModel>();
+
+                    var connStr = context.Configuration.GetConnectionString("DefaultConnection")
+                                  ?? "Server=localhost\\SQLEXPRESS;Database=QuanLyKhoHang;Trusted_Connection=True;TrustServerCertificate=True;";
+                    services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connStr));
+
+                    services.AddSingleton<TaiChinhPage>();
+                    services.AddScoped<TaiChinhViewModel>();
+                    services.AddSingleton<TonKhoPage>();
+                    services.AddScoped<TonKhoViewModel>();
+                    services.AddSingleton<Views.Pages.BaoCao.KhachHangPage>();
+                    services.AddScoped<ViewModels.Pages.BaoCao.KhachHangViewModel>();
+                    services.AddSingleton<SanPhamPage>();
+                    services.AddTransient<SanPhamViewModel>();
+                    services.AddSingleton<NhapKhoPage>();
+                    services.AddScoped<NhapKhoViewModel>();
+                    services.AddSingleton<XuatKhoPage>();
+                    services.AddScoped<XuatKhoViewModel>();
+                    services.AddSingleton<KiemKeKhoPage>();
+                    services.AddScoped<KiemKeKhoViewModel>();
+                    services.AddSingleton<ChuyenKhoPage>();
+                    services.AddScoped<ChuyenKhoViewModel>();
+                    services.AddSingleton<LichSuPage>();
+                    services.AddScoped<LichSuViewModel>();
+                    services.AddSingleton<ChiPhiPage>();
+                    services.AddScoped<ChiPhiViewModel>();
+
+                    services.AddSingleton<Views.Pages.LienHe.KhachHangPage>();
+                    services.AddScoped<ViewModels.Pages.LienHe.KhachHangViewModel>();
+                    services.AddSingleton<NhaCungCapPage>();
+                    services.AddScoped<NhaCungCapViewModel>();
+                    services.AddSingleton<NhanVienPage>();
+                    services.AddScoped<NhanVienViewModel>();
+
+                    services.AddSingleton<SettingsPage>();
+                    services.AddScoped<SettingsViewModel>();
+
+                    services.AddTransient<ThemSanPhamPage>();
+                    services.AddScoped<ThemSanPhamViewModel>();
+
+                    services.AddSingleton<SanPhamPageHeader>();
+                    services.AddScoped<SanPhamPageHeaderViewModel>();
+                    services.AddSingleton<NhapKhoPageHeader>();
+                    services.AddScoped<NhapKhoPageHeaderViewModel>();
+                    services.AddTransient<ThemSanPhamPageHeader>();
+                    services.AddScoped<ThemSanPhamPageHeaderViewModel>();
+                    services.AddSingleton<ThemDanhMucPage>();
+                    services.AddScoped<ThemDanhMucViewModel>();
+                });
     }
 }

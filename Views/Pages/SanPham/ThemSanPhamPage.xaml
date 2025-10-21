@@ -8,7 +8,7 @@
       xmlns:beh="clr-namespace:UiDesktopApp1.Behaviors"
       xmlns:local="clr-namespace:UiDesktopApp1.Views.Pages.SanPham" 
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="1450" d:DesignWidth="800"
       Title="ThemSanPhamPage">
 
     <Border Margin="16" Padding="16" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8">
@@ -17,7 +17,7 @@
 
                 <StackPanel Orientation="Horizontal">
                     <!-- Ảnh hiển thị -->
-                    <ui:Image Source="{Binding Image}" 
+                    <ui:Image Source="{Binding Image, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" 
                               Width="80" Height="80"
                               Stretch="UniformToFill"
                               CornerRadius="8"
@@ -69,7 +69,7 @@
                                 Margin="0,5,0,0"
                                 Text="{Binding Product.ProductName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True, ValidatesOnExceptions=True}"/>
                 </StackPanel>
-              
+                
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Số lượng ban đầu" FontWeight="SemiBold"/>
@@ -94,7 +94,30 @@
                                 beh:TextBoxBehaviors.SelectAllOnFocus="True"
                                 Text="{Binding Product.SalePrice, Mode=TwoWay, Converter={x:Static conv:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock Text="Danh mục (có thể bỏ trống)" />
 
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- ComboBox chọn danh mục có sẵn -->
+                        <ComboBox Grid.Column="0"
+                                   Width="318"
+                                   ItemsSource="{Binding Categories}"
+                                   DisplayMemberPath="Name"
+                                   SelectedValuePath="Id"
+                                   SelectedValue="{Binding Product.CategoryId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   IsEditable="False"/>
+                        <!-- Nút thêm mới -->
+                        <ui:Button Grid.Column="1" 
+                                   Content="Thêm danh mục"
+                                   Height="35.62"
+                                   Margin="8,0,0,0"
+                                   Command="{Binding GoAddCategoryCommand}"/>
+                    </Grid>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Border>

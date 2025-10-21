@@ -1,6 +1,11 @@
-﻿using Microsoft.Win32;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+using QuanLyKhoHang.Models;
+using QuanLyKhoHang.Views.Pages.SanPham;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -27,50 +32,53 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         private readonly AppDbContext _db;
 
         [ObservableProperty] private ProductModel product = new();   // bind form vào đây
-        [ObservableProperty] private BitmapImage? image;             // ảnh preview
+        [ObservableProperty] private ObservableCollection<CategoryModel> categories = new();
+        [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private BitmapImage? image = new BitmapImage(new Uri("pack://application:,,,/Assets/Images/logo-image.png", UriKind.Absolute));
+
+        // --- State để thêm danh mục inline ---
+        [ObservableProperty] private bool isAddingCategory;
+        [ObservableProperty] private string? newCategoryName;
+
 
         public ThemSanPhamViewModel(INavigationService nav, AppDbContext db)
         {
             _nav = nav;
-            _db = db;  
+            _db = db;
 
-            ResetForm();
+            // Lắng nghe “đã tạo danh mục” từ trang ThemDanhMucPage
+            WeakReferenceMessenger.Default.Register<CategoryCreatedMessage>(this, (r, m) =>
+            {
+                // Cập nhật danh sách + chọn ngay danh mục mới
+                Categories.Add(m.Value);
+                Product.CategoryId = m.Value.Id;
+                OnPropertyChanged(nameof(Product));
+            });
+            _ = LoadCategoriesAsync();
         }
-        /*private void LoadDefaultImage()
+
+        [RelayCommand]
+        private async Task LoadCategoriesAsync()
         {
+            IsBusy = true;
             try
             {
-                var uri = new Uri("pack://application:,,,/Assets/Images/logo-image.png", UriKind.Absolute);
-                Product.Image = new BitmapImage(uri);
-                Product.ImagePath = uri.ToString();
+                Categories.Clear();
+                var list = await _db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+                foreach (var item in list)
+                    Categories.Add(item);
             }
-            catch { }
-
-        }*/
-
-
-        private void ResetForm()
-        {
-            Product = new ProductModel
-            {
-                ProductCode = null,
-                ProductName = null,
-                InitialQty = 0,
-                SafeQty = 0,
-                CostPrice = 0,
-                SalePrice = 0,
-                ImagePath = "pack://application:,,,/Assets/Images/logo-image.png"
-            };
-
-            try
-            {
-                Image = new BitmapImage(new Uri("pack://application:,,,/Assets/Images/logo-image.png", UriKind.Absolute));
-            }
-            catch
-            {
-                Image = null;
-            }
+            finally { IsBusy = false; }
+           
         }
+
+        // Điều hướng sang trang thêm danh mục
+        [RelayCommand]
+        private void GoAddCategory()
+        {
+            _nav.Navigate(typeof(ThemDanhMucPage));
+        }
+
         [RelayCommand]
         private void OpenPicture()
         {
@@ -85,6 +93,12 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
                 Product.ImagePath = ofd.FileName;
                 Image = LoadBitmap(ofd.FileName);
             }
+        }
+
+        private void ResetForm()
+        {
+            Product = new ProductModel();
+            Image = new BitmapImage(new Uri("pack://application:,,,/Assets/Images/logo-image.png", UriKind.Absolute));
         }
 
         [RelayCommand]
@@ -135,6 +149,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         [RelayCommand]
         private void Cancel()
         {
+            ResetForm();
             _nav.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPhamPage));
         }
 
@@ -153,5 +168,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         {
             Product.ProductCode = $"SP-{DateTime.Now:yyMMddHHmmss}";
         }
+
+
     }
 }
