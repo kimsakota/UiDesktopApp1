@@ -121,6 +121,8 @@ namespace UiDesktopApp1
                     services.AddScoped<ThemSanPhamPageHeaderViewModel>();
                     services.AddSingleton<ThemDanhMucPage>();
                     services.AddScoped<ThemDanhMucViewModel>();
+                    services.AddSingleton<QuanLySanPhamPage>();
+                    services.AddScoped<QuanLySanPhamViewModel>();
                 });
     }
 }

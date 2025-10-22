@@ -39,11 +39,16 @@
                             </DataTemplate>
                         </ui:AutoSuggestBox.ItemTemplate>
                     </ui:AutoSuggestBox>
-                    <ComboBox Height="32" Width="120"
-                          Margin="10,0,0,0"/>
-                    <ui:Button Content="Làm mới"
+                    <ComboBox ItemsSource="{Binding Categories}"
+                              DisplayMemberPath="Name"
+                              SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                              Height="Auto" Width="Auto" 
+                              Margin="10,0,0,0">
+                        
+                    </ComboBox>
+                    <ui:Button Content="Làm mới" 
                                Command="{Binding LoadCommand}"
-                           Margin="10,0,0,0">
+                               Height="36" Margin="10,0,0,0">
                         <ui:Button.Icon>
                             <ui:SymbolIcon Symbol="ArrowClockwise20"/>
                         </ui:Button.Icon>

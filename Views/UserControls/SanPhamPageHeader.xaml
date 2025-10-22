@@ -22,6 +22,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
             <ui:Button Content="Quản lý sản phẩm"
+                       Command="{Binding ManageCommand}"
                        Margin="5,10,5,10">
                 <ui:Button.Icon>
                     <ui:SymbolIcon FontSize="17" Symbol="Pen24"/>
@@ -40,7 +41,7 @@
                 </ui:Button.Icon>
             </ui:Button>
             <ui:Button Content="Sản phẩm" 
-                       Command="{Binding NewCommand}"
+                       Command="{Binding AddProductCommand}"
                        Appearance="Primary"
                        Margin="5,10,15,10">
                 <ui:Button.Icon>

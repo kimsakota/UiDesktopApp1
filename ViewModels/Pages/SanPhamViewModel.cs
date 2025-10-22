@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using QuanLyKhoHang.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,6 +28,12 @@ namespace UiDesktopApp1.ViewModels.Pages
         public ObservableCollection<ProductModel> Products { get; } = new();
 
         public ICollectionView ProductsView => _productsView;
+
+        [ObservableProperty]
+        private ObservableCollection<CategoryModel> categories = new();
+
+        [ObservableProperty]
+        private CategoryModel? selectedCategory;
 
         // Ô tìm kiếm
         [ObservableProperty] private string searchText = string.Empty;
@@ -58,12 +65,13 @@ namespace UiDesktopApp1.ViewModels.Pages
             }
 
             _productsView.Refresh();
-        }
+            Categories.Clear();
 
-        [RelayCommand]
-        public void New()
-        {
-            _navigationService.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPham.ThemSanPhamPage));
+            Categories.Add(new CategoryModel { Id = 0, Name = "Danh mục" });
+            var list = await _db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+            foreach(var cat in list)
+                Categories.Add(cat);
+            SelectedCategory = Categories.FirstOrDefault();
         }
 
         partial void OnSearchTextChanged(string value) => _productsView?.Refresh();
@@ -71,6 +79,11 @@ namespace UiDesktopApp1.ViewModels.Pages
         private bool FilterProducts(object obj)
         {
             if (obj is not ProductModel p) return false;
+
+            if(SelectedCategory != null && SelectedCategory.Id != 0)
+                if(p.CategoryId != SelectedCategory.Id) return false;
+
+
             if (string.IsNullOrWhiteSpace(SearchText)) return true;
 
             return (p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true)
@@ -91,6 +104,11 @@ namespace UiDesktopApp1.ViewModels.Pages
                 return new BitmapImage(uri);
             }
             catch { return null; }
+        }
+
+        partial void OnSelectedCategoryChanged(CategoryModel? value)
+        {
+            _productsView?.Refresh();
         }
     }
 }

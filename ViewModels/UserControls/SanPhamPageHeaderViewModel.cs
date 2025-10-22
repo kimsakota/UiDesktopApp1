@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using QuanLyKhoHang.Views.Pages.SanPham;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,13 @@ namespace UiDesktopApp1.ViewModels.UserControls
         [RelayCommand]
         private void AddProduct()
         {
-            _navigationService.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPham.ThemSanPhamPage));
+            _navigationService.Navigate(typeof(ThemSanPhamPage));
         }
 
+        [RelayCommand]
+        private void Manage()
+        {
+            _navigationService.Navigate(typeof(QuanLySanPhamPage));
+        }
     }
 }
