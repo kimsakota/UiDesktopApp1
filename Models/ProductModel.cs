@@ -42,7 +42,7 @@ namespace UiDesktopApp1.Models
         private int? safeQty = 0;
 
         [ObservableProperty]
-        private DateTime? expiryDate;
+        private DateTime? expiryDate = DateTime.Now;
 
         [ObservableProperty]
         private string? description;

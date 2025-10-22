@@ -7,10 +7,11 @@
       xmlns:conv="clr-namespace:UiDesktopApp1.Models"
       xmlns:beh="clr-namespace:UiDesktopApp1.Behaviors"
       xmlns:local="clr-namespace:UiDesktopApp1.Views.Pages.SanPham" 
+      xmlns:behaviors="clr-namespace:QuanLyKhoHang.Behaviors"
       mc:Ignorable="d" 
       d:DesignHeight="1450" d:DesignWidth="800"
       Title="ThemSanPhamPage">
-
+    
     <Border Margin="16" Padding="16" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8">
         <ScrollViewer Width="450" Margin="0,5,0,5">
             <StackPanel>
@@ -95,7 +96,7 @@
                                 Text="{Binding Product.SalePrice, Mode=TwoWay, Converter={x:Static conv:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                    <TextBlock Text="Danh mục (có thể bỏ trống)" />
+                    <TextBlock Text="Danh mục (có thể bỏ trống)" FontWeight="SemiBold"/>
 
                     <Grid Margin="0,5,0,0">
                         <Grid.ColumnDefinitions>
@@ -113,10 +114,42 @@
                         <!-- Nút thêm mới -->
                         <ui:Button Grid.Column="1" 
                                    Content="Thêm danh mục"
+                                   FontWeight="SemiBold"
                                    Height="35.62"
                                    Margin="8,0,0,0"
                                    Command="{Binding GoAddCategoryCommand}"/>
                     </Grid>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock Text="Ngày hết hạn" FontWeight="SemiBold"/>
+
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox Grid.Column="0"
+                                    PlaceholderText="dd/MM/yyyy"
+                                    Text="{Binding Product.ExpiryDate, 
+                                                   Mode=TwoWay, 
+                                                   StringFormat='dd/MM/yyyy', 
+                                                   TargetNullValue='--/--/----'}"
+                                    IsReadOnly="True"
+                                    >
+                            
+                        </ui:TextBox>
+                        <ui:CalendarDatePicker Grid.Column="1"
+                                               Margin="8,0,0,0"
+                                               Height="35.62"
+                                               Date="{Binding Product.ExpiryDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock Text="Mô tả" FontWeight="SemiBold"/>
+                    <ui:TextBox PlaceholderText="Nhập mô tả"
+                                Text="{Binding Product.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ClearButtonEnabled="True"
+                                Margin="0,5,0,0"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

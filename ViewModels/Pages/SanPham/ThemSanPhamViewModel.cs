@@ -169,6 +169,32 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
             Product.ProductCode = $"SP-{DateTime.Now:yyMMddHHmmss}";
         }
 
+        // Regex chỉ cho phép số và dấu '/'
+        private static readonly Regex Allowed = new(@"^[0-9/]+$");
+
+        [RelayCommand]
+        private void DatePreviewTextInput(TextCompositionEventArgs e)
+        {
+            if (e == null) return;
+            e.Handled = !Allowed.IsMatch(e.Text);
+        }
+
+        [RelayCommand]
+        private void DatePasting(DataObjectPastingEventArgs e)
+        {
+            if (e == null) return;
+
+            if (e.DataObject.GetDataPresent(DataFormats.UnicodeText))
+            {
+                var text = (string)e.DataObject.GetData(DataFormats.UnicodeText);
+                if (!Allowed.IsMatch(text))
+                    e.CancelCommand();
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
 
     }
 }
