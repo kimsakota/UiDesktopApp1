@@ -39,9 +39,6 @@ namespace UiDesktopApp1.Models
         public decimal SalePrice { get; set; }
 
         [ObservableProperty]
-        private int? safeQty = 0;
-
-        [ObservableProperty]
         private DateTime? expiryDate = DateTime.Now;
 
         [ObservableProperty]

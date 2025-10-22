@@ -73,9 +73,6 @@ namespace UiDesktopApp1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SafeQty")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("SalePrice")
                         .HasColumnType("decimal(18,2)");
 
