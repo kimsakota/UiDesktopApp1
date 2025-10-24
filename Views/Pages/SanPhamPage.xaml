@@ -21,12 +21,11 @@
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
                     <ui:AutoSuggestBox Icon="{ui:SymbolIcon Search24}"
-                                   Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                   Width="200" Height="35"
-                                   OriginalItemsSource="{Binding AllProducts, Mode=OneWay}" 
-                                   UpdateTextOnSelect="True"
-                                   
-                                   >
+                                       PlaceholderText="Tìm kiếm"
+                                       Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                       Width="200" Height="35"
+                                       OriginalItemsSource="{Binding AllProducts, Mode=OneWay}" 
+                                       UpdateTextOnSelect="True">
                         <ui:AutoSuggestBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="8,6">
@@ -81,7 +80,6 @@
                             </Style>
                         </ui:DataGrid.TextColumnElementStyle>
 
-                        <!-- Cột hình ảnh -->
                         <ui:DataGrid.Columns>
                             <DataGridTemplateColumn Header="Hình ảnh" Width="90">
                                 <DataGridTemplateColumn.CellTemplate>

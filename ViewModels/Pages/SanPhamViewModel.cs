@@ -21,7 +21,7 @@ using Wpf.Ui.Abstractions.Controls;
 
 namespace UiDesktopApp1.ViewModels.Pages
 {
-    public partial class SanPhamViewModel : ObservableObject, INavigationAware, IRecipient<ProductCreatedMessage>
+    public partial class SanPhamViewModel : ObservableObject, INavigationAware, IRecipient<ProductCreatedMessage>, IRecipient<ProductsNeedRefreshMessage>
     {
         private readonly INavigationService _navigationService;
         private readonly AppDbContext _db;
@@ -51,11 +51,11 @@ namespace UiDesktopApp1.ViewModels.Pages
 
             // Sau khi có dữ liệu, tạo view & filter
             _productsView = CollectionViewSource.GetDefaultView(Products);
-            _productsView.SortDescriptions.Add(new SortDescription(nameof(ProductModel.ProductName), ListSortDirection.Ascending));
             _productsView.Filter = FilterProducts;
 
             //Đăng ký nhận tin nhắn
             WeakReferenceMessenger.Default.Register<ProductCreatedMessage>(this);
+            WeakReferenceMessenger.Default.Register<ProductsNeedRefreshMessage>(this);
         }
 
         #region Navigation
@@ -75,12 +75,21 @@ namespace UiDesktopApp1.ViewModels.Pages
 
         public void Receive(ProductCreatedMessage message)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke(async () =>
             {
                 var newProduct = message.Value;
                 newProduct.Image = LoadBitmap(newProduct.ImagePath);
                 Products.Add(newProduct);
-                //_productsView.Refresh();
+                await LoadDataAsync();
+            });
+        }
+        public void Receive(ProductsNeedRefreshMessage message)
+        {
+            // Khi nhận được tin nhắn này, chỉ cần chạy lại lệnh LoadDataAsync
+            // Đảm bảo chạy trên UI thread
+            Application.Current.Dispatcher.Invoke(async () =>
+            {
+                await LoadDataAsync();
             });
         }
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace UiDesktopApp1.Behaviors
+namespace QuanLyKhoHang.Behaviors
 {
     public class InverseBooleanConverter : IValueConverter
     {

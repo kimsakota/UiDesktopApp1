@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:conv="clr-namespace:UiDesktopApp1.Models"
-      xmlns:beh="clr-namespace:UiDesktopApp1.Behaviors"
+      xmlns:beh="clr-namespace:QuanLyKhoHang.Behaviors"
       xmlns:local="clr-namespace:UiDesktopApp1.Views.Pages.SanPham" 
       xmlns:behaviors="clr-namespace:QuanLyKhoHang.Behaviors"
       mc:Ignorable="d" 

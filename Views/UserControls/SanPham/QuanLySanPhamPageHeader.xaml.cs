@@ -1,5 +1,4 @@
 ﻿using QuanLyKhoHang.ViewModels.Pages.SanPham;
-using QuanLyKhoHang.Views.UserControls.SanPham;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,25 +13,21 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UiDesktopApp1.Contracts;
 
-namespace QuanLyKhoHang.Views.Pages.SanPham
+namespace QuanLyKhoHang.Views.UserControls.SanPham
 {
     /// <summary>
-    /// Interaction logic for QuanLySanPhamPage.xaml
+    /// Interaction logic for QuanLySanPhamPageHeader.xaml
     /// </summary>
-    public partial class QuanLySanPhamPage : Page, IHasHeader
+    
+    public partial class QuanLySanPhamPageHeader : UserControl
     {
         public QuanLySanPhamViewModel ViewModel { get; set; }
-        private QuanLySanPhamPageHeader _header;
-        public QuanLySanPhamPage(QuanLySanPhamViewModel viewModel, QuanLySanPhamPageHeader header)
+        public QuanLySanPhamPageHeader(QuanLySanPhamViewModel viewModel)
         {
             InitializeComponent();
             ViewModel = viewModel;
             DataContext = viewModel;
-            _header = header;
         }
-        public object? GetHeader() => _header;
-
     }
 }

@@ -5,50 +5,33 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:QuanLyKhoHang.Views.Pages.SanPham"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:beh="clr-namespace:UiDesktopApp1.Behaviors"
+      xmlns:beh="clr-namespace:QuanLyKhoHang.Behaviors"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="QuanLySanPhamPage">
+    <Page.Resources>
+        <beh:ZeroToCollapsedConverter x:Key="ZeroToCollapsedConverter"/>
+    </Page.Resources>
 
     <StackPanel Orientation="Vertical">
-        <StackPanel Orientation="Horizontal" Height="50" Margin="5">
-            <ui:Button Command="{Binding ExitCommand}"
-                       Background="Transparent"
-                       Padding="5"
-                       Width="Auto"
-                       BorderThickness="0"
-                       MouseOverBackground="LightGray"
-                       Margin="5"
-                       CornerRadius="10">
-                <ui:Button.Icon>
-                    <ui:SymbolIcon Symbol="ChevronLeft12" FontSize="28" FontWeight="Bold"/>
-                </ui:Button.Icon>
-            </ui:Button>
-            <TextBlock Text="Quản Lý Sản Phẩm"
-                       VerticalAlignment="Center"
-                       FontSize="22"
-                       FontWeight="SemiBold"/>
-        </StackPanel>
         <StackPanel Margin="20">
-            <!-- Tìm kiếm và lọc danh mục -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBox Width="200" Height="36" Margin="0,0,10,0"
-                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                  />
+                <ui:TextBox Width="200" Height="36" Margin="0,0,10,0"
+                         PlaceholderText="Tìm kiếm"
+                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <ComboBox Width="200" Height="36" ItemsSource="{Binding Categories}"
                   SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
                   DisplayMemberPath="Name" Margin="0,0,10,0" />
                 <Button Content="Làm mới" Command="{Binding LoadDataCommand}" Width="100" Height="36"/>
             </StackPanel>
 
-            <!-- Thanh chọn nhiều -->
-            <StackPanel Orientation="Horizontal"  Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal"  Margin="0,0,0,10" 
+                        Visibility="{Binding SelectedCount, Converter={StaticResource ZeroToCollapsedConverter}}">
                 <TextBlock Text="{Binding SelectedCount, StringFormat='Đã chọn {0} sản phẩm'}" FontWeight="Bold" VerticalAlignment="Center" />
                 <Button Content="Hủy chọn" Command="{Binding SelectAllCommand}" Margin="10,0" />
                 <Button Content="Xóa đã chọn" Command="{Binding DeleteSelectedCommand}" Margin="10,0" Background="Red" Foreground="White" />
             </StackPanel>
 
-            <!-- Bảng dữ liệu -->
             <Border>
                 <ui:DataGrid ItemsSource="{Binding ProductsView}"
                              AutoGenerateColumns="False"
@@ -58,14 +41,14 @@
                              CanUserResizeRows="False"
                              CanUserReorderColumns="False"
                              IsReadOnly="True"
-                             SelectionMode="Single"
+                             SelectionMode="Extended"
                              HeadersVisibility="All"
                              RowHeight="56"
                              AlternatingRowBackground="#F8F9FB"
                              BorderThickness="1"
                              BorderBrush="#DDD">
 
-                    <!-- Style mặc định -->
+
                     <ui:DataGrid.TextColumnElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -76,18 +59,37 @@
                     </ui:DataGrid.TextColumnElementStyle>
 
                     <ui:DataGrid.Columns>
-                        <!-- Checkbox chọn -->
                         <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.Header>
-                                <CheckBox Command="{Binding SelectAllCommand}"/>
+                                <CheckBox IsChecked="{Binding DataContext.IsAllItemsSelected, 
+                                                               RelativeSource={RelativeSource AncestorType={x:Type local:QuanLySanPhamPage}}, 
+                                                               Mode=TwoWay, 
+                                                               UpdateSourceTrigger=PropertyChanged}"/>
                             </DataGridTemplateColumn.Header>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Center"/>
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <DataGridTemplateColumn Header="Hình ảnh" Width="90">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Padding="4">
+                                        <Image Source="{Binding Image}"
+                        Width="48"
+                        Height="48"
+                        Stretch="UniformToFill"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        ClipToBounds="True"
+                        SnapsToDevicePixels="True"
+                        RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
                         <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding ProductName, Mode=TwoWay}" Width="*" />
                         <DataGridTextColumn Header="Mã số" Binding="{Binding ProductCode, Mode=TwoWay}" Width="100" />
@@ -96,11 +98,11 @@
                         <DataGridTextColumn Header="Danh mục" Binding="{Binding CategoryId, Mode=TwoWay}" Width="Auto" />
                         <DataGridTextColumn Header="Ngày hết hạn" Binding="{Binding ExpiryDate, StringFormat={}{0:dd/MM/yyyy}}" Width="Auto" />
 
-                        <!-- Nút sửa -->
                         <DataGridTemplateColumn Header="Sửa" Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Sửa"  />
+                                    <Button Content="Sửa"
+                                            />      
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

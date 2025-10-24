@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wpf.Ui.Controls;
 
-namespace UiDesktopApp1.Behaviors
+namespace QuanLyKhoHang.Behaviors
 {
     public static class TextBoxBehaviors
     {

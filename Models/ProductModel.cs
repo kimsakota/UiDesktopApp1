@@ -53,9 +53,10 @@ namespace UiDesktopApp1.Models
         [NotMapped]
         public BitmapImage? Image { get; set; }
 
-        [NotMapped]
-        
+        [property: NotMapped]
+        [ObservableProperty]
         private bool isSelected = false;
+
         public void ValidateAll() => base.ValidateAllProperties();
 
     }

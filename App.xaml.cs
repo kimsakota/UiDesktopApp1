@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using QuanLyKhoHang.ViewModels.Pages.SanPham;
 using QuanLyKhoHang.Views.Pages.SanPham;
+using QuanLyKhoHang.Views.UserControls.SanPham;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -123,6 +124,7 @@ namespace UiDesktopApp1
                     services.AddScoped<ThemDanhMucViewModel>();
                     services.AddSingleton<QuanLySanPhamPage>();
                     services.AddScoped<QuanLySanPhamViewModel>();
+                    services.AddSingleton<QuanLySanPhamPageHeader>();
                 });
     }
 }
