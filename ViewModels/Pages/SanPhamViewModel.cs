@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKhoHang.Models;
+using QuanLyKhoHang.Models.Messages;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,14 +17,16 @@ using System.Windows.Navigation;
 using UiDesktopApp1.Models;
 using UiDesktopApp1.ViewModels.Pages.SanPham;
 using Wpf.Ui;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace UiDesktopApp1.ViewModels.Pages
 {
-    public partial class SanPhamViewModel : ObservableObject
+    public partial class SanPhamViewModel : ObservableObject, INavigationAware, IRecipient<ProductCreatedMessage>
     {
         private readonly INavigationService _navigationService;
         private readonly AppDbContext _db;
         private readonly ICollectionView _productsView;
+        private bool _isInitialized = false;
 
         // Danh sách nguồn
         public ObservableCollection<ProductModel> Products { get; } = new();
@@ -38,6 +42,8 @@ namespace UiDesktopApp1.ViewModels.Pages
         // Ô tìm kiếm
         [ObservableProperty] private string searchText = string.Empty;
 
+        [ObservableProperty] private bool isBusy;
+
         public SanPhamViewModel(INavigationService navigationService, AppDbContext db)
         {
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
@@ -45,34 +51,73 @@ namespace UiDesktopApp1.ViewModels.Pages
 
             // Sau khi có dữ liệu, tạo view & filter
             _productsView = CollectionViewSource.GetDefaultView(Products);
+            _productsView.SortDescriptions.Add(new SortDescription(nameof(ProductModel.ProductName), ListSortDirection.Ascending));
             _productsView.Filter = FilterProducts;
+
+            //Đăng ký nhận tin nhắn
+            WeakReferenceMessenger.Default.Register<ProductCreatedMessage>(this);
+        }
+
+        #region Navigation
+        public async Task OnNavigatedToAsync()
+        {
+            if(!_isInitialized)
+            {
+                await LoadDataAsync();
+                _isInitialized = true;
+            }
+        }
+        public Task OnNavigatedFromAsync()
+        {
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        public void Receive(ProductCreatedMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var newProduct = message.Value;
+                newProduct.Image = LoadBitmap(newProduct.ImagePath);
+                Products.Add(newProduct);
+                //_productsView.Refresh();
+            });
         }
 
         [RelayCommand]
-        public async Task LoadAsync()
+        public async Task LoadDataAsync()
         {
-            Products.Clear();
-            SearchText = string.Empty.Trim();
-            var items = await _db.Products
-                .AsNoTracking()
-                .OrderBy(p => p.ProductName)
-                .ToListAsync();
-
-            foreach (var p in items)
+            IsBusy = true;
+            try
             {
-                p.Image = LoadBitmap(p.ImagePath);
-                Products.Add(p);
+                Products.Clear();
+                SearchText = string.Empty.Trim();
+                var items = await _db.Products
+                    .AsNoTracking()
+                    .OrderBy(p => p.ProductName)
+                    .ToListAsync();
+
+                foreach(var p in items)
+                {
+                    p.Image = LoadBitmap(p.ImagePath);
+                    Products.Add(p);
+                }
+
+                //_productsView.Refresh();
+                SelectedCategory = Categories.FirstOrDefault();
+
+                if (Categories.Count == 0)
+                {
+                    Categories.Add(new CategoryModel { Id = 0, Name = "Danh mục" });
+                    var list = await _db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+                    foreach (var cat in list)
+                        Categories.Add(cat);
+                    SelectedCategory = Categories.FirstOrDefault();
+                }
             }
-
-            _productsView.Refresh();
-            Categories.Clear();
-
-            Categories.Add(new CategoryModel { Id = 0, Name = "Danh mục" });
-            var list = await _db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
-            foreach(var cat in list)
-                Categories.Add(cat);
-            SelectedCategory = Categories.FirstOrDefault();
+            finally { IsBusy = false; }
         }
+
 
         partial void OnSearchTextChanged(string value) => _productsView?.Refresh();
 

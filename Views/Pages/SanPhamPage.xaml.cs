@@ -34,7 +34,6 @@ namespace UiDesktopApp1.Views.Pages
             ViewModel = viewModel;
             DataContext = viewModel;
             _header = header;
-            Loaded += async (_, __) => await ViewModel.LoadAsync(); // kéo dữ liệu ngay khi vào trang
         }
         public object? GetHeader() => _header;
     }

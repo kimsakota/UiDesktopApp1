@@ -39,7 +39,7 @@ namespace UiDesktopApp1.Models
         public decimal SalePrice { get; set; }
 
         [ObservableProperty]
-        private DateTime? expiryDate = DateTime.Now;
+        private DateTime? expiryDate = null;
 
         [ObservableProperty]
         private string? description;
@@ -53,6 +53,9 @@ namespace UiDesktopApp1.Models
         [NotMapped]
         public BitmapImage? Image { get; set; }
 
+        [NotMapped]
+        
+        private bool isSelected = false;
         public void ValidateAll() => base.ValidateAllProperties();
 
     }

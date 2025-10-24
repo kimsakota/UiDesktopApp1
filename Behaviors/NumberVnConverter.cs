@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace UiDesktopApp1.Models
+namespace UiDesktopApp1.Behaviors
 {
     public class NumberVnConverter : IValueConverter
     {

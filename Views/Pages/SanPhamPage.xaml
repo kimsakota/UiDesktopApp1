@@ -47,7 +47,7 @@
                         
                     </ComboBox>
                     <ui:Button Content="Làm mới" 
-                               Command="{Binding LoadCommand}"
+                               Command="{Binding LoadDataCommand}"
                                Height="36" Margin="10,0,0,0">
                         <ui:Button.Icon>
                             <ui:SymbolIcon Symbol="ArrowClockwise20"/>

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using QuanLyKhoHang.Models;
+using QuanLyKhoHang.Models.Messages;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

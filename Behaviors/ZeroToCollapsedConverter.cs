@@ -6,22 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace UiDesktopApp1.Behaviors
+namespace QuanLyKhoHang.Behaviors
 {
-    public class InverseBooleanConverter : IValueConverter
+    public class ZeroToCollapsedConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool b)
-                return !b;
-            return value;
+            if (value is int intValue)
+                return intValue > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            if (value is long longValue)
+                return longValue > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool b)
-                return !b;
-            return value;
+            throw new NotImplementedException();
         }
     }
 }

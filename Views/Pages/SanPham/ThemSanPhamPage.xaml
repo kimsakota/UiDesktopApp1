@@ -85,7 +85,7 @@
                     </StackPanel>
                     <ui:TextBox Margin="0,5,0,0"
                                 beh:TextBoxBehaviors.SelectAllOnFocus="True"
-                                Text="{Binding Product.CostPrice, Mode=TwoWay, Converter={x:Static conv:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
+                                Text="{Binding Product.CostPrice, Mode=TwoWay, Converter={x:Static beh:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
@@ -93,7 +93,7 @@
                     </StackPanel>
                     <ui:TextBox Margin="0,5,0,0"
                                 beh:TextBoxBehaviors.SelectAllOnFocus="True"
-                                Text="{Binding Product.SalePrice, Mode=TwoWay, Converter={x:Static conv:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
+                                Text="{Binding Product.SalePrice, Mode=TwoWay, Converter={x:Static beh:NumberVnConverter.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <TextBlock Text="Danh mục (có thể bỏ trống)" FontWeight="SemiBold"/>
