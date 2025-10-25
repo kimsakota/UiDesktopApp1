@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.EntityFrameworkCore;
+using QuanLyKhoHang.Contracts;
 using QuanLyKhoHang.Models;
 using QuanLyKhoHang.Models.Messages;
 using System;
@@ -78,7 +79,7 @@ namespace UiDesktopApp1.ViewModels.Pages
             Application.Current.Dispatcher.Invoke(async () =>
             {
                 var newProduct = message.Value;
-                newProduct.Image = LoadBitmap(newProduct.ImagePath);
+                newProduct.Image = ImageHelper.LoadBitmap(newProduct.ImagePath);
                 Products.Add(newProduct);
                 await LoadDataAsync();
             });
@@ -108,7 +109,7 @@ namespace UiDesktopApp1.ViewModels.Pages
 
                 foreach(var p in items)
                 {
-                    p.Image = LoadBitmap(p.ImagePath);
+                    p.Image = ImageHelper.LoadBitmap(p.ImagePath);
                     Products.Add(p);
                 }
 
@@ -141,22 +142,6 @@ namespace UiDesktopApp1.ViewModels.Pages
 
             return (p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true)
                 || (p.ProductCode?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true);
-        }
-
-        private static BitmapImage? LoadBitmap(string? path)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(path)) return null;
-
-                // Hỗ trợ cả Pack URI và file path
-                Uri uri = path.StartsWith("pack://", StringComparison.OrdinalIgnoreCase)
-                    ? new Uri(path, UriKind.Absolute)
-                    : new Uri(System.IO.Path.GetFullPath(path), UriKind.Absolute);
-
-                return new BitmapImage(uri);
-            }
-            catch { return null; }
         }
 
         partial void OnSelectedCategoryChanged(CategoryModel? value)

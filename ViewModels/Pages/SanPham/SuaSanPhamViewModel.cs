@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
+using QuanLyKhoHang.Contracts;
 using QuanLyKhoHang.Models;
 using QuanLyKhoHang.Models.Messages;
 using QuanLyKhoHang.Views.Pages.SanPham;
@@ -93,7 +94,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
                     // Bằng cách gán Product, binding cho SelectedValue="{Binding Product.CategoryId}"
                     // sẽ được kích hoạt sau khi ItemsSource đã đầy đủ.
                     Product = productFromDb;
-                    Image = LoadBitmap(Product.ImagePath);
+                    Image = ImageHelper.LoadBitmap(Product.ImagePath);
                 }
                 else
                 {
@@ -122,7 +123,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
             if (ofd.ShowDialog() == true)
             {
                 Product.ImagePath = ofd.FileName;
-                Image = LoadBitmap(ofd.FileName);
+                Image = ImageHelper.LoadBitmap(ofd.FileName);
             }
         }
 
@@ -165,32 +166,6 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         private void Cancel()
         {
             _nav.Navigate(typeof(QuanLySanPhamPage));
-        }
-
-        private static BitmapImage? LoadBitmap(string? path)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(path)) return null;
-
-                // Hỗ trợ cả file path và pack URI
-                if (path.StartsWith("pack://", StringComparison.OrdinalIgnoreCase))
-                {
-                    return new BitmapImage(new Uri(path, UriKind.Absolute));
-                }
-
-                if (File.Exists(path))
-                {
-                    return new BitmapImage(new Uri(Path.GetFullPath(path), UriKind.Absolute));
-                }
-
-                // Nếu không phải cả hai, thử tải ảnh mặc định
-                return new BitmapImage(new Uri("pack://application:,,,/Assets/Images/logo-image.png", UriKind.Absolute));
-            }
-            catch
-            {
-                return new BitmapImage(new Uri("pack://application:,,,/Assets/Images/logo-image.png", UriKind.Absolute));
-            }
         }
 
         [RelayCommand]

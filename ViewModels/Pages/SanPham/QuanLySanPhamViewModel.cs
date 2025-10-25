@@ -16,6 +16,7 @@ using UiDesktopApp1;
 using UiDesktopApp1.Models;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
+using QuanLyKhoHang.Contracts;
 
 namespace QuanLyKhoHang.ViewModels.Pages.SanPham
 {
@@ -153,7 +154,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
 
                 foreach (var p in items)
                 {
-                    p.Image = LoadBitmap(p.ImagePath);
+                    p.Image = ImageHelper.LoadBitmap(p.ImagePath);
                     p.PropertyChanged += Product_PropertyChanged;
                     Products.Add(p);
                 }
@@ -196,22 +197,6 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
 
             return (p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true)
                 || (p.ProductCode?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true);
-        }
-
-        private static BitmapImage? LoadBitmap(string? path)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(path)) return null;
-
-                // Hỗ trợ cả Pack URI và file path
-                Uri uri = path.StartsWith("pack://", StringComparison.OrdinalIgnoreCase)
-                    ? new Uri(path, UriKind.Absolute)
-                    : new Uri(System.IO.Path.GetFullPath(path), UriKind.Absolute);
-
-                return new BitmapImage(uri);
-            }
-            catch { return null; }
         }
 
         partial void OnSelectedCategoryChanged(CategoryModel? value)

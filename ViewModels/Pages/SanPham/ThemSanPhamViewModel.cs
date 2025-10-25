@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
+using QuanLyKhoHang.Contracts;
 using QuanLyKhoHang.Models;
 using QuanLyKhoHang.Models.Messages;
 using QuanLyKhoHang.Views.Pages.SanPham;
@@ -99,7 +100,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
             if (ofd.ShowDialog() == true)
             {
                 Product.ImagePath = ofd.FileName;
-                Image = LoadBitmap(ofd.FileName);
+                Image = ImageHelper.LoadBitmap(ofd.FileName);
             }
         }
 
@@ -159,16 +160,6 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         {
             ResetForm();
             _nav.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPhamPage));
-        }
-
-        private static BitmapImage? LoadBitmap(string? path)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return null;
-                return new BitmapImage(new Uri(Path.GetFullPath(path), UriKind.Absolute));
-            }
-            catch { return null; }
         }
 
         [RelayCommand]
