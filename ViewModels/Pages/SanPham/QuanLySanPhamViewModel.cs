@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QuanLyKhoHang.Models;
 using QuanLyKhoHang.Models.Messages;
+using QuanLyKhoHang.Views.Pages.SanPham;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -44,7 +45,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
         [ObservableProperty] private int selectedCount = 0;
 
         [ObservableProperty]
-        private bool _isAllItemsSelected; // <-- THÊM MỚI: For header checkbox
+        private bool _isAllItemsSelected;
 
         public QuanLySanPhamViewModel(INavigationService navigationService, AppDbContext db)
         {
@@ -298,6 +299,16 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
                     item.IsSelected = false; // Thao tác này sẽ tự động kích hoạt Product_PropertyChanged
                 }
             }
+        }
+
+        [RelayCommand]
+        private void EditProduct(ProductModel? product)
+        {
+            if (product == null) return;
+
+            _navigationService.Navigate(typeof(SuaSanPhamPage));
+
+            WeakReferenceMessenger.Default.Send(new EditProductMessage(product.Id));
         }
     }
 }

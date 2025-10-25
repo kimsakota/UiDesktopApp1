@@ -125,6 +125,10 @@ namespace UiDesktopApp1
                     services.AddSingleton<QuanLySanPhamPage>();
                     services.AddScoped<QuanLySanPhamViewModel>();
                     services.AddSingleton<QuanLySanPhamPageHeader>();
+                    services.AddSingleton<SuaSanPhamPage>();
+                    services.AddScoped<SuaSanPhamViewModel>();
+                    services.AddSingleton<SuaSanPhamPageHeader>();
+
                 });
     }
 }

@@ -78,20 +78,20 @@
                                 <DataTemplate>
                                     <Border Padding="4">
                                         <Image Source="{Binding Image}"
-                        Width="48"
-                        Height="48"
-                        Stretch="UniformToFill"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        ClipToBounds="True"
-                        SnapsToDevicePixels="True"
-                        RenderOptions.BitmapScalingMode="HighQuality"/>
+                                               Width="48"
+                                               Height="48"
+                                               Stretch="UniformToFill"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               ClipToBounds="True"
+                                               SnapsToDevicePixels="True"
+                                               RenderOptions.BitmapScalingMode="HighQuality"/>         
                                     </Border>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding ProductName, Mode=TwoWay}" Width="*" />
+                        <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding ProductName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Width="*" />
                         <DataGridTextColumn Header="Mã số" Binding="{Binding ProductCode, Mode=TwoWay}" Width="100" />
                         <DataGridTextColumn Header="Giá vốn" Binding="{Binding CostPrice, Mode=TwoWay, StringFormat={}{0:N0} ₫}" Width="Auto" />
                         <DataGridTextColumn Header="Giá bán" Binding="{Binding SalePrice, Mode=TwoWay, StringFormat={}{0:N0} ₫}" Width="Auto" />
@@ -101,8 +101,12 @@
                         <DataGridTemplateColumn Header="Sửa" Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Sửa"
-                                            />      
+                                    <ui:Button Content="Sửa"
+                                               Icon="Pen24"
+                                               Appearance="Transparent"
+                                               Command="{Binding DataContext.EditProductCommand, 
+                                                                 RelativeSource={RelativeSource AncestorType={x:Type local:QuanLySanPhamPage}}}"
+                                               CommandParameter="{Binding}"/>    
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

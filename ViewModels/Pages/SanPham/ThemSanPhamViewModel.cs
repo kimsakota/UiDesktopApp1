@@ -107,9 +107,6 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         {
             Product.ValidateAll();
 
-            /*System.Diagnostics.Debug.WriteLine(
-            $"Save: Code={Product.ProductCode ?? "<null>"}, Name={Product.ProductName ?? "<null>"}");*/
-
             if (Product.HasErrors)
             {
                 // Gom các lỗi lại để hiển thị
