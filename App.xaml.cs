@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using QuanLyKhoHang.ViewModels.Pages.SanPham;
+using QuanLyKhoHang.ViewModels.Windows;
 using QuanLyKhoHang.Views.Pages.SanPham;
 using QuanLyKhoHang.Views.UserControls.SanPham;
+using QuanLyKhoHang.Views.Windows;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -39,8 +41,8 @@ namespace UiDesktopApp1
 
         private async void OnStartup(object sender, StartupEventArgs e)
         {
-            await _host.StartAsync();
             ApplicationThemeManager.Apply(ApplicationTheme.Light);
+            await _host.StartAsync();
         }
 
         private async void OnExit(object sender, ExitEventArgs e)
@@ -73,8 +75,10 @@ namespace UiDesktopApp1
                     services.AddSingleton<IThemeService, ThemeService>();
                     services.AddSingleton<ITaskBarService, TaskBarService>();
                     services.AddSingleton<INavigationService, NavigationService>();
-                    services.AddSingleton<INavigationWindow, MainWindow>();
-                    services.AddSingleton<MainWindowViewModel>();
+                    services.AddTransient<INavigationWindow, MainWindow>();
+                    services.AddTransient<MainWindowViewModel>();
+                    services.AddTransient<LoginWindow>();
+                    services.AddTransient<LoginViewModel>();
 
                     var connStr = context.Configuration.GetConnectionString("DefaultConnection")
                                   ?? "Server=localhost\\SQLEXPRESS;Database=QuanLyKhoHang;Trusted_Connection=True;TrustServerCertificate=True;";

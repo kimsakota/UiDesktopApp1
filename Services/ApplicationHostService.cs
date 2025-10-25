@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using QuanLyKhoHang.Views.Windows;
 using UiDesktopApp1.Views.Pages;
 using UiDesktopApp1.Views.Windows;
 using Wpf.Ui;
@@ -13,7 +14,7 @@ namespace UiDesktopApp1.Services
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private INavigationWindow _navigationWindow;
+        //private INavigationWindow _navigationWindow;
 
         public ApplicationHostService(IServiceProvider serviceProvider)
         {
@@ -43,16 +44,20 @@ namespace UiDesktopApp1.Services
         /// </summary>
         private async Task HandleActivationAsync()
         {
-            if (!Application.Current.Windows.OfType<MainWindow>().Any())
+            var loginWindow = _serviceProvider.GetRequiredService<LoginWindow>();
+
+                loginWindow.ShowDialog();
+
+            if(loginWindow.ViewModel.IsLoginSuccessful)
             {
-                _navigationWindow = (
-                    _serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow
-                )!;
-                _navigationWindow!.ShowWindow();
+                var navigationWindow = _serviceProvider.GetRequiredService<INavigationWindow>();
+                navigationWindow.ShowWindow();
 
-                _navigationWindow.Navigate(typeof(Views.Pages.SanPhamPage));
+                navigationWindow.Navigate(typeof(SanPhamPage));
+            } else
+            {
+                Application.Current.Shutdown();
             }
-
             await Task.CompletedTask;
         }
     }

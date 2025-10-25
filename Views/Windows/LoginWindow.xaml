@@ -1,0 +1,158 @@
+﻿<Window x:Class="QuanLyKhoHang.Views.Windows.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:beh="clr-namespace:QuanLyKhoHang.Behaviors"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:local="clr-namespace:QuanLyKhoHang.Views.Windows" xmlns:windows="clr-namespace:QuanLyKhoHang.ViewModels.Windows" d:DataContext="{d:DesignInstance Type=windows:LoginViewModel}"
+                 mc:Ignorable="d"
+        Title="LoginWindow" Height="550" Width="600"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        
+        MouseDown="Window_MouseDown">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+            <beh:StringNullOrEmptyToVisibilityConverter x:Key="StringNullOrEmptyToVisibilityConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border CornerRadius="12">
+        <Border.Background>
+            <ImageBrush ImageSource="/Assets/Images/Backgrounds/back_image.jpg"
+                    Stretch="Fill"/>
+        </Border.Background>
+
+        <Border CornerRadius="10"
+            BorderThickness="2"
+            Opacity="0.95">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#462AD8" Offset="0"/>
+                    <GradientStop Color="#DA34AE" Offset="0.75"/>
+                    <GradientStop Color="#8A16C1" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                    <GradientStop Color="#060531" Offset="0"/>
+                    <GradientStop Color="#1B1448" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="47*"/>
+                    <ColumnDefinition Width="251*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Width="220"
+                        Orientation="Vertical"
+                        Margin="94,35,188,0" Grid.Column="1">
+                    <Image Source="/Assets/Images/Logos/logo.png"
+                       Width="180" Height="100"
+                       Stretch="Fill"/>
+                    <TextBlock Text="QUẢN LÝ KHO"
+                           Foreground="White"
+                           FontSize="25"
+                           FontWeight="Medium"
+                           FontFamily="Montserrat"
+                           HorizontalAlignment="Center"/>
+                    <TextBlock Text="---------------------------"
+                            Foreground="LightGray"
+                            FontSize="12"
+                            FontWeight="Medium"
+                            FontFamily="Montserrat"
+                            TextWrapping="Wrap"
+                            TextAlignment="Center"
+                            Margin="0,5,0,0"/>
+
+                    <TextBlock Text="Username"
+                           Foreground="DarkGray"
+                           FontSize="12"
+                           FontWeight="Medium"
+                           FontFamily="Montserrat"                             
+                           Margin="0,35,0,0"/>
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="35"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ui:SymbolIcon Symbol="Person12" 
+                                       Foreground="White"
+                                       Grid.Column="0"/>
+                        <ui:TextBox Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    PlaceholderText="User"
+                                    Grid.Column="1"/>
+                    </Grid>
+                    
+                    <TextBlock Text="Password"
+                               Foreground="DarkGray"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               FontFamily="Montserrat"                             
+                               Margin="0,15,0,0"/>
+                    <Grid Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="35"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ui:SymbolIcon Symbol="Key16"
+                                       Foreground="White"
+                                   
+                                       Grid.Column="0"/>
+
+                        <ui:PasswordBox x:Name="PasswordBox"
+                                        PlaceholderText="Password" 
+                                        Icon="Password24"
+                                        Grid.Column="1"/>
+                    </Grid>
+
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="Red"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
+                    <ui:Button Appearance="Primary"
+                           Content="LOG IN"
+                           Foreground="White"
+                           FontSize="12"
+                           FontFamily="/Resources/Roboto/Roboto-Bold.ttf#Roboto"
+                           Width="150" Height="40"
+                           CornerRadius="20"
+                           Cursor="Hand"
+                           Margin="0,20,0,0"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Command="{Binding LoginCommand}"
+                           CommandParameter="{Binding ElementName=PasswordBox}"/>
+
+                    <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Margin="0,15,0,0">
+                        <TextBlock Text="Forgot Password?"
+                               Foreground="DarkGray"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               FontFamily="Montserrat"/>
+                        <TextBlock Text="Reset" 
+                               Foreground="White" 
+                               FontSize="12"
+                               FontWeight="Medium"
+                               FontFamily="Montserrat"
+                               Cursor="Hand"
+                               Margin="8,0,0,0"
+                               />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Border>
+</Window>
