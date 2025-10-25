@@ -127,7 +127,6 @@ namespace UiDesktopApp1.ViewModels.Pages
             finally { IsBusy = false; }
         }
 
-
         partial void OnSearchTextChanged(string value) => _productsView?.Refresh();
 
         private bool FilterProducts(object obj)

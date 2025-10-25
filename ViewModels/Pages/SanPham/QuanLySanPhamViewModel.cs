@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore; // <-- CẦN THÊM USING NÀY
 using QuanLyKhoHang.Models;
 using QuanLyKhoHang.Models.Messages;
 using QuanLyKhoHang.Views.Pages.SanPham;
@@ -22,7 +22,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
     public partial class QuanLySanPhamViewModel : ObservableObject, INavigationAware, IRecipient<ProductsNeedRefreshMessage>
     {
         private readonly INavigationService _navigationService;
-        private readonly AppDbContext _db;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
         private readonly ICollectionView _productsView;
         private bool _isInitialized = false;
 
@@ -37,29 +37,22 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
         [ObservableProperty]
         private CategoryModel? selectedCategory;
 
-        // Ô tìm kiếm
         [ObservableProperty] private string searchText = string.Empty;
-
         [ObservableProperty] private bool isBusy;
-
         [ObservableProperty] private int selectedCount = 0;
+        [ObservableProperty] private bool _isAllItemsSelected;
 
-        [ObservableProperty]
-        private bool _isAllItemsSelected;
-
-        public QuanLySanPhamViewModel(INavigationService navigationService, AppDbContext db)
+        public QuanLySanPhamViewModel(INavigationService navigationService, IDbContextFactory<AppDbContext> dbContextFactory)
         {
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
-            _db = db ?? throw new ArgumentNullException(nameof(db));
+            _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
 
-            // Sau khi có dữ liệu, tạo view & filter
             _productsView = CollectionViewSource.GetDefaultView(Products);
             _productsView.SortDescriptions.Add(new SortDescription(nameof(ProductModel.ProductName), ListSortDirection.Ascending));
             _productsView.Filter = FilterProducts;
 
+            //Đăng ký nhận tin nhắn "cần làm mới"
             WeakReferenceMessenger.Default.Register<ProductsNeedRefreshMessage>(this);
-            //Đăng ký nhận tin nhắn
-            //WeakReferenceMessenger.Default.Register<ProductCreatedMessage>(this);
 
             Products.CollectionChanged += (s, e) =>
             {
@@ -71,10 +64,18 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
                     foreach (ProductModel item in e.OldItems)
                         item.PropertyChanged -= Product_PropertyChanged;
 
-                UpdateSelections(); // Cập nhật khi collection thay đổi
+                UpdateSelections();
             };
         }
 
+        // Hàm nhận tin nhắn làm mới (từ trang Sửa hoặc Thêm)
+        public void Receive(ProductsNeedRefreshMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(async () =>
+            {
+                await LoadDataAsync();
+            });
+        }
 
         private void Product_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -97,26 +98,26 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
 
         private void UpdateIsAllItemsSelected()
         {
-            // Chỉ kiểm tra các item đang hiển thị trong View (đã filter)
             var viewItems = _productsView.Cast<ProductModel>().ToList();
             bool allSelected = viewItems.Count > 0 && viewItems.All(p => p.IsSelected);
+            #pragma warning disable
             SetProperty(ref _isAllItemsSelected, allSelected, nameof(IsAllItemsSelected));
         }
 
         partial void OnIsAllItemsSelectedChanged(bool value)
         {
-            // Lấy danh sách item *đang hiển thị* (đã filter) và set IsSelected
             var viewItems = _productsView.Cast<ProductModel>().ToList();
             foreach (var item in viewItems)
             {
                 item.IsSelected = value;
             }
-            // UpdateSelectedCount sẽ được trigger bởi các event PropertyChanged
         }
 
         #region Navigation
         public async Task OnNavigatedToAsync()
         {
+            // Logic này giữ nguyên: chỉ tải lần đầu, các lần sau sẽ được làm mới
+            // thông qua tin nhắn "ProductsNeedRefreshMessage"
             if (!_isInitialized)
             {
                 await LoadDataAsync();
@@ -129,28 +130,23 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
         }
         #endregion
 
-
-        public void Receive(ProductsNeedRefreshMessage message)
-        {
-            Application.Current.Dispatcher.Invoke(async () =>
-            {
-                await LoadDataAsync();
-            });
-        }
-
         [RelayCommand]
         public async Task LoadDataAsync()
         {
             IsBusy = true;
             try
             {
-                // THAY ĐỔI: Hủy đăng ký event cũ
+                // Tạo một AppDbContext mới chỉ dùng cho hàm này
+                await using var db = await _dbContextFactory.CreateDbContextAsync();
+
                 foreach (var p in Products)
                     p.PropertyChanged -= Product_PropertyChanged;
 
                 Products.Clear();
                 SearchText = string.Empty.Trim();
-                var items = await _db.Products
+
+                // Thêm .Include(p => p.Category) để hiển thị Tên Danh mục
+                var items = await db.Products
                     .Include(p => p.Category)
                     .OrderBy(p => p.ProductName)
                     .ToListAsync();
@@ -158,26 +154,24 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
                 foreach (var p in items)
                 {
                     p.Image = LoadBitmap(p.ImagePath);
-                    p.PropertyChanged += Product_PropertyChanged; // THAY ĐỔI: Đăng ký event
+                    p.PropertyChanged += Product_PropertyChanged;
                     Products.Add(p);
                 }
 
-                //_productsView.Refresh();
-                SelectedCategory = Categories.FirstOrDefault();
-
+                // Tải danh mục (dùng 'db' mới)
                 if (Categories.Count == 0)
                 {
                     Categories.Add(new CategoryModel { Id = 0, Name = "Danh mục" });
-                    var list = await _db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+                    var list = await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
                     foreach (var cat in list)
                         Categories.Add(cat);
-                    SelectedCategory = Categories.FirstOrDefault();
                 }
+                SelectedCategory = Categories.FirstOrDefault();
             }
             finally
             {
                 IsBusy = false;
-                UpdateSelections(); // THAY ĐỔI: Cập nhật sau khi tải xong
+                UpdateSelections();
             }
         }
 
@@ -186,7 +180,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
         {
             _productsView?.Refresh();
             DeselectHiddenItems();
-            UpdateIsAllItemsSelected(); // THÊM MỚI: Cập nhật header checkbox khi filter
+            UpdateIsAllItemsSelected();
             UpdateSelectedCount();
         }
 
@@ -228,8 +222,9 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
             UpdateSelectedCount();
         }
 
+        // Đổi tên từ Exit -> GoBack (Rõ nghĩa hơn)
         [RelayCommand]
-        private void Exit()
+        private void GoBack()
         {
             _navigationService.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPhamPage));
         }
@@ -237,67 +232,69 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
         [RelayCommand]
         private void SelectAll()
         {
-            // "Hủy chọn" -> Deselect All
             var itemsToDeselect = _productsView.Cast<ProductModel>().Where(p => p.IsSelected).ToList();
             foreach (var product in itemsToDeselect)
                 product.IsSelected = false;
-            // UpdateSelections() sẽ tự được gọi
         }
+
         [RelayCommand]
         private async Task DeleteSelected()
         {
-            var selectedProducts = _productsView.Cast<ProductModel>().Where(p => p.IsSelected).ToList();
+            // 1. Lấy danh sách sản phẩm (từ UI) để biết ID
+            var selectedProductsFromVM = _productsView.Cast<ProductModel>().Where(p => p.IsSelected).ToList();
+            if (selectedProductsFromVM.Count == 0) return;
 
-            var result = System.Windows.MessageBox.Show($"Bạn có chắc chắn muốn xóa {selectedProducts.Count} sản phẩm đã chọn không?",
+            var result = System.Windows.MessageBox.Show($"Bạn có chắc chắn muốn xóa {selectedProductsFromVM.Count} sản phẩm đã chọn không?",
                                                        "Xác nhận xóa",
                                                        System.Windows.MessageBoxButton.YesNo,
                                                        System.Windows.MessageBoxImage.Warning);
-            if(result != System.Windows.MessageBoxResult.Yes) return;
+            if (result != System.Windows.MessageBoxResult.Yes) return;
+
             IsBusy = true;
             try
             {
-                _db.Products.RemoveRange(selectedProducts);
-                await _db.SaveChangesAsync();
+                await using var db = await _dbContextFactory.CreateDbContextAsync();
 
-                foreach (var product in selectedProducts)
+                var productIdsToDelete = selectedProductsFromVM.Select(p => p.Id).ToList();
+                var productsToDeleteFromDb = await db.Products
+                    .Where(p => productIdsToDelete.Contains(p.Id))
+                    .ToListAsync();
+
+                db.Products.RemoveRange(productsToDeleteFromDb);
+                await db.SaveChangesAsync();
+
+                foreach (var product in selectedProductsFromVM)
                 {
                     product.PropertyChanged -= Product_PropertyChanged;
                     Products.Remove(product);
                 }
 
                 WeakReferenceMessenger.Default.Send(new ProductsNeedRefreshMessage());
-
                 UpdateSelections();
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show($"Đã xảy ra lỗi khi xóa sản phẩm:\n{ex.Message}", "Lỗi", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                await LoadDataAsync();
+                await LoadDataAsync(); 
             }
             finally
             {
                 IsBusy = false;
             }
         }
+
         private void DeselectHiddenItems()
         {
-            // Lấy danh sách các mục đang được chọn (từ danh sách gốc)
             var currentlySelected = Products.Where(p => p.IsSelected).ToList();
+            if (currentlySelected.Count == 0) return;
 
-            if (currentlySelected.Count == 0)
-                return; // Không có gì để làm
-
-            // Lấy danh sách các mục đang hiển thị (sau khi lọc)
-            // Dùng HashSet để tăng tốc độ kiểm tra
             var visibleItems = _productsView.Cast<ProductModel>().ToHashSet();
 
             foreach (var item in currentlySelected)
             {
-                // Nếu mục này đang được chọn, NHƯNG không có trong danh sách hiển thị...
                 if (!visibleItems.Contains(item))
                 {
-                    // ... thì bỏ chọn nó.
-                    item.IsSelected = false; // Thao tác này sẽ tự động kích hoạt Product_PropertyChanged
+                    item.IsSelected = false;
                 }
             }
         }
@@ -308,7 +305,6 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
             if (product == null) return;
 
             _navigationService.Navigate(typeof(SuaSanPhamPage));
-
             WeakReferenceMessenger.Default.Send(new EditProductMessage(product.Id));
         }
     }

@@ -17,10 +17,11 @@ using Wpf.Ui.Abstractions.Controls;
 
 namespace UiDesktopApp1.ViewModels.Pages.SanPham
 {
-    public partial class SuaSanPhamViewModel : ObservableObject, IRecipient<EditProductMessage>
+    public partial class SuaSanPhamViewModel : ObservableObject, IRecipient<EditProductMessage>, IRecipient<CategoryCreatedMessage>
     {
         private readonly INavigationService _nav;
-        private readonly AppDbContext _db;
+        //private readonly AppDbContext _db;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
         [ObservableProperty]
         private ProductModel product = new(); // Sản phẩm đang được chỉnh sửa
@@ -34,14 +35,14 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         [ObservableProperty]
         private BitmapImage? image;
 
-        public SuaSanPhamViewModel(INavigationService nav, AppDbContext db)
+        public SuaSanPhamViewModel(INavigationService nav, IDbContextFactory<AppDbContext> dbContextFactory)
         {
             _nav = nav;
-            _db = db;
+            _dbContextFactory = dbContextFactory;
 
             WeakReferenceMessenger.Default.Register<EditProductMessage>(this);
+            //WeakReferenceMessenger.Default.Register<CategoryCreatedMessage>(this);
 
-            // Lắng nghe “đã tạo danh mục” từ trang ThemDanhMucPage
             WeakReferenceMessenger.Default.Register<CategoryCreatedMessage>(this, (r, m) =>
             {
                 // Cập nhật danh sách + chọn ngay danh mục mới
@@ -49,7 +50,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
                 Product.CategoryId = m.Value.Id;
                 OnPropertyChanged(nameof(Product));
             });
-            _ = LoadCategoriesAsync();
+            //_ = LoadCategoriesAsync();
         }
 
         public void Receive(EditProductMessage message)
@@ -60,34 +61,45 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
             });
         }
 
+        public void Receive(CategoryCreatedMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Categories.Add(message.Value);
+                Product.CategoryId = message.Value.Id;
+                OnPropertyChanged(nameof(Product));
+            });
+        }
+
         public async Task LoadProductAsync(int productId)
         {
             IsBusy = true;
 
-            var productFromDb = await _db.Products.FirstOrDefaultAsync(p => p.Id == productId);
-
-            if(productFromDb != null)
-            {
-                Product = productFromDb;
-                Image = LoadBitmap(Product.ImagePath);
-            } else
-            {
-                MessageBox.Show("Không tìm thấy sản phẩm.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                Cancel();
-            }
-            IsBusy = false;
-        }
-
-        [RelayCommand]
-        private async Task LoadCategoriesAsync()
-        {
-            IsBusy = true;
             try
             {
-                Categories.Clear();
-                var list = await _db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
-                foreach (var item in list)
-                    Categories.Add(item);
+                await using var db = await _dbContextFactory.CreateDbContextAsync();
+
+                var categoriesList = await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+                var productFromDb = await db.Products.FirstOrDefaultAsync(p => p.Id == productId);
+
+                if (productFromDb != null)
+                {
+                    // 3. Gán ItemsSource (Categories) TRƯỚC
+                    Categories.Clear();
+                    foreach (var item in categoriesList)
+                        Categories.Add(item);
+
+                    // 4. Gán SelectedValue (Product) SAU
+                    // Bằng cách gán Product, binding cho SelectedValue="{Binding Product.CategoryId}"
+                    // sẽ được kích hoạt sau khi ItemsSource đã đầy đủ.
+                    Product = productFromDb;
+                    Image = LoadBitmap(Product.ImagePath);
+                }
+                else
+                {
+                    MessageBox.Show("Không tìm thấy sản phẩm.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Cancel();
+                }
             }
             finally { IsBusy = false; }
         }
@@ -132,8 +144,9 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
 
             try
             {
-                _db.Products.Update(Product);
-                await _db.SaveChangesAsync();
+                await using var db = await _dbContextFactory.CreateDbContextAsync();
+                db.Products.Update(Product);
+                await db.SaveChangesAsync();
 
                 // Gửi tin nhắn để trang danh sách tự làm mới
                 WeakReferenceMessenger.Default.Send(new ProductsNeedRefreshMessage());
@@ -151,13 +164,6 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         [RelayCommand]
         private void Cancel()
         {
-            // Hủy các thay đổi đang theo dõi
-            var entry = _db.Entry(Product);
-            if (entry.State == EntityState.Modified)
-            {
-                entry.Reload();
-            }
-
             _nav.Navigate(typeof(QuanLySanPhamPage));
         }
 

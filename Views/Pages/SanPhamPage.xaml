@@ -85,15 +85,16 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Padding="4">
-                                            <Image Source="{Binding Image}"
-                                                   Width="48"
-                                                   Height="48"
-                                                   Stretch="UniformToFill"
-                                                   VerticalAlignment="Center"
-                                                   HorizontalAlignment="Center"
-                                                   ClipToBounds="True"
-                                                   SnapsToDevicePixels="True"
-                                                   RenderOptions.BitmapScalingMode="HighQuality"/>  
+                                            <ui:Image Source="{Binding Image}"
+                                                      Width="48"
+                                                      Height="48"
+                                                      CornerRadius="6" BorderBrush="#33000000"
+                                                      Stretch="UniformToFill"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center"
+                                                      ClipToBounds="True"
+                                                      SnapsToDevicePixels="True"
+                                                      RenderOptions.BitmapScalingMode="HighQuality"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

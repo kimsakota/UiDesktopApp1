@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using QuanLyKhoHang.Models;
 using QuanLyKhoHang.Models.Messages;
@@ -16,16 +17,16 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
 {
     public partial class ThemDanhMucViewModel : ObservableObject
     {
-        private readonly AppDbContext _db;
         private readonly INavigationService _nav;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
         [ObservableProperty]
         private string? name;
 
-        public ThemDanhMucViewModel(AppDbContext db, INavigationService nav)
+        public ThemDanhMucViewModel(INavigationService nav, IDbContextFactory<AppDbContext> dbContextFactory)
         {
-            _db = db;
             _nav = nav;
+            _dbContextFactory = dbContextFactory;
         }
 
         [RelayCommand]
@@ -40,8 +41,10 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
             
             try
             {
+                await using var db = await _dbContextFactory.CreateDbContextAsync();
+
                 // (tuỳ chọn) kiểm tra trùng tên
-                var existed = await _db.Categories.AnyAsync(c => c.Name == n);
+                var existed = await db.Categories.AnyAsync(c => c.Name == n);
                 if (existed)
                 {
                     // TODO: bắn snackbar nếu bạn có service thông báo
@@ -54,13 +57,13 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
                     Name = n,
                 };
 
-                _db.Categories.Add(cat);
-                await _db.SaveChangesAsync();
+                db.Categories.Add(cat);
+                await db.SaveChangesAsync();
 
                 // Gửi “tin nhắn” về trang trước để tự chọn danh mục vừa tạo
                 WeakReferenceMessenger.Default.Send(new CategoryCreatedMessage(cat));
 
-                _nav.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPham.ThemSanPhamPage));
+                _nav.GoBack();
             }
             finally
             {
@@ -71,7 +74,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
         [RelayCommand]
         private void Cancel()
         {
-            _nav.Navigate(typeof(UiDesktopApp1.Views.Pages.SanPham.ThemSanPhamPage));
+            _nav.GoBack();
         }
     }
 }

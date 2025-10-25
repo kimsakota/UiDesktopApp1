@@ -24,13 +24,13 @@ using Wpf.Ui.Controls;
 
 namespace UiDesktopApp1.ViewModels.Pages.SanPham
 {
-    public partial class ThemSanPhamViewModel : ObservableObject
+    public partial class ThemSanPhamViewModel : ObservableObject, IRecipient<CategoryCreatedMessage>
     {
         //[ObservableProperty]
         //private BitmapImage? image;
 
         private readonly INavigationService _nav;
-        private readonly AppDbContext _db;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
         [ObservableProperty] private ProductModel product = new();   // bind form vào đây
         [ObservableProperty] private ObservableCollection<CategoryModel> categories = new();
@@ -42,20 +42,26 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         [ObservableProperty] private string? newCategoryName;
 
 
-        public ThemSanPhamViewModel(INavigationService nav, AppDbContext db)
+        public ThemSanPhamViewModel(INavigationService nav, IDbContextFactory<AppDbContext> dbContextFactory)
         {
             _nav = nav;
-            _db = db;
+            _dbContextFactory = dbContextFactory;
 
             // Lắng nghe “đã tạo danh mục” từ trang ThemDanhMucPage
-            WeakReferenceMessenger.Default.Register<CategoryCreatedMessage>(this, (r, m) =>
+            WeakReferenceMessenger.Default.Register<CategoryCreatedMessage>(this);
+
+            WeakReferenceMessenger.Default.Send(new ProductsNeedRefreshMessage());
+            _ = LoadCategoriesAsync();
+        }
+
+        public void Receive(CategoryCreatedMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                // Cập nhật danh sách + chọn ngay danh mục mới
-                Categories.Add(m.Value);
-                Product.CategoryId = m.Value.Id;
+                Categories.Add(message.Value);
+                Product.CategoryId = message.Value.Id;
                 OnPropertyChanged(nameof(Product));
             });
-            _ = LoadCategoriesAsync();
         }
 
         [RelayCommand]
@@ -64,8 +70,10 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
             IsBusy = true;
             try
             {
+                await using var db = await _dbContextFactory.CreateDbContextAsync();
+
                 Categories.Clear();
-                var list = await _db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+                var list = await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
                 foreach (var item in list)
                     Categories.Add(item);
             }
@@ -73,7 +81,6 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
            
         }
 
-        // Điều hướng sang trang thêm danh mục
         [RelayCommand]
         private void GoAddCategory()
         {
@@ -123,8 +130,10 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
 
             try
             {
-                await _db.Products.AddAsync(Product);
-                await _db.SaveChangesAsync();
+                await using var db = await _dbContextFactory.CreateDbContextAsync();
+
+                await db.Products.AddAsync(Product);
+                await db.SaveChangesAsync();
 
                 //System.Windows.MessageBox.Show("Đã lưu sản phẩm thành công!", "KhoPro",
                 //    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
@@ -190,9 +199,7 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
                     e.CancelCommand();
             }
             else
-            {
                 e.CancelCommand();
-            }
         }
 
     }

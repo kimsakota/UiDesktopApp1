@@ -78,7 +78,7 @@ namespace UiDesktopApp1
 
                     var connStr = context.Configuration.GetConnectionString("DefaultConnection")
                                   ?? "Server=localhost\\SQLEXPRESS;Database=QuanLyKhoHang;Trusted_Connection=True;TrustServerCertificate=True;";
-                    services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connStr));
+                    services.AddDbContextFactory<AppDbContext>(opt => opt.UseSqlServer(connStr));
 
                     services.AddSingleton<TaiChinhPage>();
                     services.AddScoped<TaiChinhViewModel>();
