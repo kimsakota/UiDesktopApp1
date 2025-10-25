@@ -19,7 +19,7 @@ using Wpf.Ui.Abstractions.Controls;
 
 namespace QuanLyKhoHang.ViewModels.Pages.SanPham
 {
-    public partial class QuanLySanPhamViewModel : ObservableObject, INavigationAware
+    public partial class QuanLySanPhamViewModel : ObservableObject, INavigationAware, IRecipient<ProductsNeedRefreshMessage>
     {
         private readonly INavigationService _navigationService;
         private readonly AppDbContext _db;
@@ -57,6 +57,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
             _productsView.SortDescriptions.Add(new SortDescription(nameof(ProductModel.ProductName), ListSortDirection.Ascending));
             _productsView.Filter = FilterProducts;
 
+            WeakReferenceMessenger.Default.Register<ProductsNeedRefreshMessage>(this);
             //Đăng ký nhận tin nhắn
             //WeakReferenceMessenger.Default.Register<ProductCreatedMessage>(this);
 
@@ -73,6 +74,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
                 UpdateSelections(); // Cập nhật khi collection thay đổi
             };
         }
+
 
         private void Product_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -127,14 +129,12 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
         }
         #endregion
 
-        public void Receive(ProductCreatedMessage message)
+
+        public void Receive(ProductsNeedRefreshMessage message)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke(async () =>
             {
-                var newProduct = message.Value;
-                newProduct.Image = LoadBitmap(newProduct.ImagePath);
-                Products.Add(newProduct);
-                //_productsView.Refresh();
+                await LoadDataAsync();
             });
         }
 
@@ -151,6 +151,7 @@ namespace QuanLyKhoHang.ViewModels.Pages.SanPham
                 Products.Clear();
                 SearchText = string.Empty.Trim();
                 var items = await _db.Products
+                    .Include(p => p.Category)
                     .OrderBy(p => p.ProductName)
                     .ToListAsync();
 

@@ -63,7 +63,6 @@ namespace UiDesktopApp1.ViewModels.Pages.SanPham
         public async Task LoadProductAsync(int productId)
         {
             IsBusy = true;
-            await LoadCategoriesAsync();
 
             var productFromDb = await _db.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
