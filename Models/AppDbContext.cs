@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QuanLyKhoHang.Contracts;
 using QuanLyKhoHang.Models;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace UiDesktopApp1.Models
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<ProductModel> Products => Set<ProductModel>();
         public DbSet<CategoryModel> Categories => Set<CategoryModel>();
+        public DbSet<UserModel> Users => Set<UserModel>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,7 +26,11 @@ namespace UiDesktopApp1.Models
                 .HasOne(p => p.Category)
                 .WithMany(p => p.Products)
                 .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.SetNull); // Xoá danh mục -> CategoryId của sản phẩm = NULL
+                .OnDelete(DeleteBehavior.SetNull); 
+
+            modelBuilder.Entity<UserModel>()
+                .HasIndex(u => u.Username)
+                .IsUnique(true); // Đảm bảo Tên đăng nhập là duy nhất
 
             base.OnModelCreating(modelBuilder);
         }

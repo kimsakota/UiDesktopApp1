@@ -38,5 +38,14 @@ namespace QuanLyKhoHang.Views.Windows
             if (e.LeftButton == MouseButtonState.Pressed)
                 DragMove();
         }
+
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel != null && sender is System.Windows.Controls.PasswordBox passwordBox)
+            {
+                // Cập nhật thuộc tính SecurePassword trên ViewModel
+                ViewModel.SecurePassword = passwordBox.SecurePassword;
+            }
+        }
     }
 }

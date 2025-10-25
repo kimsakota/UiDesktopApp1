@@ -20,6 +20,9 @@
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
             <beh:StringNullOrEmptyToVisibilityConverter x:Key="StringNullOrEmptyToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <beh:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+
         </ResourceDictionary>
     </Window.Resources>
 
@@ -47,7 +50,8 @@
                 </LinearGradientBrush>
             </Border.Background>
 
-            <Grid>
+            <Grid Opacity="{Binding IsLoggingIn, Converter={StaticResource InverseBooleanConverter}, ConverterParameter=0.5, FallbackValue=1.0}"
+                      IsEnabled="{Binding IsLoggingIn, Converter={StaticResource InverseBooleanConverter}, FallbackValue=True}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="47*"/>
                     <ColumnDefinition Width="251*"/>
@@ -113,7 +117,8 @@
                         <ui:PasswordBox x:Name="PasswordBox"
                                         PlaceholderText="Password" 
                                         Icon="Password24"
-                                        Grid.Column="1"/>
+                                        Grid.Column="1"
+                                        PasswordChanged="PasswordBox_PasswordChanged"/>
                     </Grid>
 
                     <TextBlock Text="{Binding ErrorMessage}"
@@ -131,7 +136,7 @@
                            Margin="0,20,0,0"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
-                           Command="{Binding LoginCommand}"
+                           Command="{Binding LoginAsyncCommand}"
                            CommandParameter="{Binding ElementName=PasswordBox}"/>
 
                     <StackPanel Orientation="Horizontal"
@@ -153,6 +158,7 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
+            
         </Border>
     </Border>
 </Window>

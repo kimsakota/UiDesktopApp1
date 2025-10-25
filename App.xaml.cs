@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using QuanLyKhoHang.Services;
 using QuanLyKhoHang.ViewModels.Pages.SanPham;
 using QuanLyKhoHang.ViewModels.Windows;
 using QuanLyKhoHang.Views.Pages.SanPham;
@@ -75,6 +76,7 @@ namespace UiDesktopApp1
                     services.AddSingleton<IThemeService, ThemeService>();
                     services.AddSingleton<ITaskBarService, TaskBarService>();
                     services.AddSingleton<INavigationService, NavigationService>();
+                    services.AddScoped<IAuthenticationService, AuthenticationService>();
                     services.AddTransient<INavigationWindow, MainWindow>();
                     services.AddTransient<MainWindowViewModel>();
                     services.AddTransient<LoginWindow>();
